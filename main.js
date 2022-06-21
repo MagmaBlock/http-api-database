@@ -9,8 +9,7 @@ app.use(express.json());
 app.all('/*', async (req, res, next) => {
   res.header('Content-Type', 'application/json'); // 指定客户端请求的属性
   res.header('Access-Control-Allow-Origin', '*'); // 允许跨域
-  res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, DELETE, PUT');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   let nowTime = new Date().toLocaleString(); // 获取当前时间
   let ip = req.ip;
   // 兼容nginx代理
