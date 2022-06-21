@@ -1,0 +1,25 @@
+{
+  "name": "http-api-database",
+  "version": "1.0.0",
+  "description": "A Database under HTTP API",
+  "type": "module",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MagmaBlock/HTTP-API-Database.git"
+  },
+  "author": "MagmaBlock",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MagmaBlock/HTTP-API-Database/issues"
+  },
+  "homepage": "https://github.com/MagmaBlock/HTTP-API-Database#readme",
+  "dependencies": {
+    "express": "^4.18.1",
+    "mysql": "^2.18.1",
+    "nodemon": "^2.0.16"
+  }
+}
