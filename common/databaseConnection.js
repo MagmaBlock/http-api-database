@@ -22,7 +22,7 @@ connect();
 let createTableIfNotExist =
   `create table if not exists main(
     \`key\` varchar(100) NOT NULL,
-    \`value\` text,
+    \`value\` mediumtext,
     UNIQUE KEY \`main_un\` (\`key\`)
   )`
 db.query(
