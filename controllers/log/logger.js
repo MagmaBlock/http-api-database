@@ -10,7 +10,12 @@ export default async function logger(key, type, code = '', message = '', ip = ''
     'INSERT INTO log (`key`, `type`, `code`, `message`, `ip`) VALUES (?,?,?,?,?)',
     [key, type, code, message, ip]
   )
-
-  console.log(`[${new Date().toLocaleTimeString()}][${type}${code ? ' ' + code : ''}]${ip ? ' ' + ip : ''}${message ? ' ' + message : ''}`)
+  let log = {
+    time: `[${new Date().toLocaleTimeString()}]`,
+    ip: ip ? `[${ip}]` : '',
+    typeAndKey: `[${type}${key ? ' ' + key : ''}]`,
+    result: ` ${code} ${message}`
+  }
+  console.log(log.time + log.ip + log.typeAndKey + log.result);
 
 }
