@@ -10,7 +10,7 @@ export default async function get(req, res) {
 
     if (!key) { // 未提供 Key
       let message = '未提供 Key'
-      res.send({ code: 400, message, data: "" })
+      res.send({ code: 400, message })
       logger(key || '', 'GET', 400, message, requestData(req).ip)
       return;
     }
@@ -39,7 +39,7 @@ export default async function get(req, res) {
 
     console.error(error, '执行 GET 时发生错误! ');
     res.send({ code: 500, message: '服务器内部错误' })
-    
+
   }
 }
 
