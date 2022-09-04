@@ -24,6 +24,7 @@ let createTableIfNotExist =
     `CREATE TABLE IF NOT EXISTS main (
     \`key\` varchar(100) NOT NULL,
     \`value\` mediumtext,
+    \`update_time\` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
     UNIQUE KEY \`main_un\` (\`key\`)
     ) DEFAULT CHARSET=utf8mb4;`,
 

@@ -10,7 +10,7 @@ export default async function update(req, res) {
   if (!key || isJSON(req.body.value) && req.body.value != '') {
     let message = '请求语法错误'
     res.send({ code: 400, message });
-    logger(key, 'UPDATE', 400, message, requestData(req).ip)
+    logger(key || '', 'UPDATE', 400, message, requestData(req).ip)
     return
   }
 
@@ -36,7 +36,7 @@ async function updateValueByKey(key, value) {
   }
 
   let dbResult = await dbQuery(
-    'INSERT INTO `main` (`key`, value) VALUES (?,?) ON DUPLICATE KEY UPDATE value = ?',
+    'INSERT INTO `main` (`key`, value) VALUES (?,?) ON DUPLICATE KEY UPDATE value = ?, update_time = CURRENT_TIMESTAMP',
     [key, value, value]
   );
 
