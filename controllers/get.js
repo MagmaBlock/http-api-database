@@ -1,6 +1,7 @@
-import dbQuery from "../controllers/tools/dbQuery.js"
+import { promiseDB } from "../common/databaseConnection.js";
 import logger from "./log/logger.js";
 import requestData from "./request/requestData.js";
+import emojiParser from "./tools/emojiParser.js";
 import isJSON from "./tools/isJson.js";
 
 export default async function get(req, res) {
@@ -17,18 +18,18 @@ export default async function get(req, res) {
 
     let result = await getValueByKey(key); // 查询结果
 
-    if (result[0]) { // 有数据
-      let value = result[0].value;
-      if (isJSON(value)) {
-        value = JSON.parse(value);
-      }
+    if (result) { // 有数据
       let message = '成功'
-      res.send({ code: 200, message, data: value })
+      res.send({
+        code: 200, message, data: result.value,
+        lastUpdate: result.update_time ? result.update_time.getTime() : -1,
+        key: result.key
+      })
       logger(key, 'GET', 200, message, requestData(req).ip)
       return;
     }
 
-    if (result.length == 0) { // 找不到
+    if (!result) { // 找不到
       let message = '无此 Key'
       res.send({ code: 404, message, data: "" })
       logger(key, 'GET', 404, message, requestData(req).ip)
@@ -44,9 +45,17 @@ export default async function get(req, res) {
 }
 
 async function getValueByKey(key) {
-  let dbResult = await dbQuery(
+  let dbResult = await promiseDB.query(
     'SELECT * FROM `main` WHERE `key` = ?',
     [key]
   )
-  return dbResult;
+  if (dbResult[0].length == 0) return false // 如果找不到此 Key 直接返回 false
+  let result = dbResult[0][0]
+  result.value = emojiParser.parse(result.value) // 解析转译后的 Emoji
+
+  if (isJSON(result.value)) { // 解析 JSON
+    result.value = JSON.parse(result.value);
+  }
+
+  return result;
 }
