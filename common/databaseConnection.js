@@ -2,20 +2,7 @@ import mysql from 'mysql2';
 import config from './config.js';
 
 const db = mysql.createPool(config.mysql);
-
-function connect() {
-  // db.connect(
-  //   (error) => {
-  //     if (error) {
-  //       console.error(error)
-  //       console.error('[数据库] 连接数据库时发生错误')
-  //       return;
-  //     }
-  //     console.log('[数据库] 成功连接到数据库')
-  //   }
-  // )
-}
-connect();
+console.log('[启动信息] 已创建数据库连接池');
 
 
 // 如果表不存在建表

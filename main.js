@@ -1,7 +1,5 @@
 import express from "express";
 
-import config from "./common/config.js";
-import db from './common/databaseConnection.js'
 import logger from "./controllers/log/logger.js";
 import requestData from "./controllers/request/requestData.js";
 
