@@ -10,7 +10,7 @@ export default async function get(req, res) {
   if (!key) { // 未提供 Key
     let message = '未提供 Key'
     res.send({ code: 400, message, data: "" })
-    logger(key, 'GET', 400, message, requestData(req).ip)
+    logger(key || '', 'GET', 400, message, requestData(req).ip)
     return;
   }
 
