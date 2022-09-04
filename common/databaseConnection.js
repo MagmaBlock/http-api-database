@@ -2,6 +2,9 @@ import mysql from 'mysql2';
 import config from './config.js';
 
 const db = mysql.createPool(config.mysql);
+const promiseDB = db.promise(); // mysql2 promise api
+export default db;
+export { promiseDB };
 console.log('[启动信息] 已创建数据库连接池');
 
 
@@ -37,5 +40,3 @@ for (let i in createTableIfNotExist) {
   )
 
 }
-
-export default db;
