@@ -1,4 +1,6 @@
 import dbQuery from "../controllers/tools/dbQuery.js"
+import logger from "./log/logger.js";
+import requestData from "./request/requestData.js";
 import isJSON from "./tools/isJson.js";
 
 export default async function get(req, res) {
@@ -6,8 +8,9 @@ export default async function get(req, res) {
   let key = req.params[0]; // 请求的ID
 
   if (!key) { // 未提供 Key
-    res.send({ code: 400, message: "未提供 Key", data: "" })
-    console.log(`[GET] 400 非法请求 未提供 Key`);
+    let message = '未提供 Key'
+    res.send({ code: 400, message, data: "" })
+    logger(key, 'GET', 400, message, requestData(req).ip)
     return;
   }
 
@@ -18,14 +21,16 @@ export default async function get(req, res) {
     if (isJSON(value)) {
       value = JSON.parse(value);
     }
-    res.send({ code: 200, message: "成功", data: value })
-    console.log(`[GET] 200 [key ${key}]`);
+    let message = '成功'
+    res.send({ code: 200, message, data: value })
+    logger(key, 'GET', 200, message, requestData(req).ip)
     return;
   }
 
   if (result.length == 0) { // 找不到
-    res.send({ code: 404, message: "无此 Key", data: "" })
-    console.log(`[GET] 404 [key ${key}]`);
+    let message = '无此 Key'
+    res.send({ code: 404, message, data: "" })
+    logger(key, 'GET', 404, message, requestData(req).ip)
     return;
   }
 }

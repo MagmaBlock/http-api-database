@@ -3,10 +3,11 @@ export default {
   nginxMode: true,
   // MySQL
   mysql: {
-    host: "localhost",
+    host: 'localhost',
     port: 3306,
-    user: "HTTPDB",
-    password: "password",
-    database: "httpdb"
+    user: 'test',
+    database: 'test',
+    password: 'testtest',
+    charset: 'utf8mb4' // 支持 utf8mb4 编码，支持 Emoji
   },
 }
