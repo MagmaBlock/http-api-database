@@ -5,9 +5,9 @@ export default {
   mysql: {
     host: 'localhost',
     port: 3306,
-    user: 'test',
-    database: 'test',
-    password: 'testtest',
+    user: 'HTTPDB',
+    database: 'httpdb',
+    password: 'httpdb',
     charset: 'utf8mb4' // 支持 utf8mb4 编码，支持 Emoji
   },
 }
