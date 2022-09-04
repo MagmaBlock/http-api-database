@@ -2,6 +2,7 @@ import express from "express";
 
 import logger from "./controllers/log/logger.js";
 import requestData from "./controllers/request/requestData.js";
+import { clearOldLogs } from "./controllers/log/logCleaner.js";
 
 const app = express(); // Express app
 app.use(express.json()); // use JSON body
@@ -12,7 +13,6 @@ app.all('/*', async (req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*'); // 允许跨域
   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
 
-  // console.log(`[${nowTime}][${req.method} ${ip}] ${req.url}`);
   requestData(req)
   next();
 });
@@ -29,3 +29,9 @@ app.all('*', function (req, res) { // 404
 const server = app.listen(7090, () => {
   console.log("[启动信息] 服务器已启动, 访问端口为: " + server.address().port)
 })
+
+
+setInterval(() => { // 每一小时会触发一次的定时任务
+  console.log('[定时任务] 正在执行定时任务...');
+  clearOldLogs()
+}, 1000 * 60 * 60)

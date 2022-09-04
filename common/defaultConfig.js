@@ -2,11 +2,8 @@
   新安装时, 在同目录下创建一份 config.js,
   使用本文件的内容即可
 */
-import defaultConfig from './defaultConfig.js'
 
 export default {
-  // 引入默认设置, 如果版本更新后此文件未更新将会从默认引用. 请勿删改此项
-  ...defaultConfig,
   // 启用此模式后将能够支持由 Nginx 反向代理的客户端 IP 显示，若程序未被 Nginx 反代可能会被有心人士伪造访问 IP
   nginxMode: true,
   // MySQL
