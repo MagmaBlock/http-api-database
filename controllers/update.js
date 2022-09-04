@@ -1,6 +1,7 @@
 import logger from "./log/logger.js";
 import requestData from "./request/requestData.js";
 import dbQuery from "./tools/dbQuery.js";
+import emojiParser from "./tools/emojiParser.js";
 import isJSON from "./tools/isJson.js";
 
 export default async function update(req, res) {
@@ -8,15 +9,16 @@ export default async function update(req, res) {
   try {
 
     let key = req.body.key
+    let value = req.body.value
 
-    if (!key || isJSON(req.body.value) && req.body.value != '') {
+    if (!key || isJSON(value) && value != '') {
       let message = '请求语法错误'
       res.send({ code: 400, message });
       logger(key || '', 'UPDATE', 400, message, requestData(req).ip)
       return
     }
 
-    let ifSuccess = await updateValueByKey(key, req.body.value);
+    let ifSuccess = await updateValueByKey(key, value);
 
     if (ifSuccess) {
       let message = '成功'
@@ -40,9 +42,11 @@ export default async function update(req, res) {
 
 async function updateValueByKey(key, value) {
 
-  if (typeof value == 'object') {
+  if (typeof value == 'object') { // 将对象转义为 JSON 字符串
     value = JSON.stringify(value);
   }
+
+  value = emojiParser.stringify(value) // 转义 emoji, 此时的 value 已是 String
 
   let dbResult = await dbQuery(
     'INSERT INTO `main` (`key`, value) VALUES (?,?) ON DUPLICATE KEY UPDATE value = ?, update_time = CURRENT_TIMESTAMP',
