@@ -42,7 +42,7 @@ export default async function update(req, res) {
 
 async function updateValueByKey(key, value) {
 
-  if (typeof value == 'object') { // 将对象转义为 JSON 字符串
+  if (typeof value == 'object' || typeof value == 'number') { // 将对象转义为 JSON 字符串
     value = JSON.stringify(value);
   }
 

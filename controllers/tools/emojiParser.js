@@ -7,6 +7,9 @@ export default {
 
 
 function stringify(text) { // 转义
+
+  if (typeof text !== 'string') text = JSON.stringify(text)
+
   let emojis = text.match(emojiRegex())
   emojis = new Set(emojis) // 去重
   emojis = Array.from(emojis)
@@ -20,6 +23,9 @@ function stringify(text) { // 转义
 
 
 function parse(text) { // 解析
+
+  if (typeof text !== 'string') text = JSON.stringify(text)
+
   let emojis = text.match(/\[emoji\:.*?\]/g)
   emojis = new Set(emojis)
   emojis = Array.from(emojis)
