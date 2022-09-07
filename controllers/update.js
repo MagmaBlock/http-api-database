@@ -14,7 +14,7 @@ export default async function update(req, res) {
     if (!key || isJSON(value) && value != '') {
       let message = '请求语法错误'
       res.send({ code: 400, message });
-      logger(key || '', 'UPDATE', 400, message, requestData(req).ip)
+      logger(key || '', 'POST', 400, message, requestData(req).ip)
       return
     }
 
@@ -23,12 +23,12 @@ export default async function update(req, res) {
     if (ifSuccess) {
       let message = '成功'
       res.send({ code: 200, message })
-      logger(key, 'UPDATE', 200, message, requestData(req).ip)
+      logger(key, 'POST', 200, message, requestData(req).ip)
     }
     else {
       let message = '插入或更新失败'
       res.send({ code: 500, message })
-      logger(key, 'UPDATE', 500, message, requestData(req).ip)
+      logger(key, 'POST', 500, message, requestData(req).ip)
     }
 
   } catch (error) {
