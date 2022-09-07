@@ -25,7 +25,15 @@ let createTableIfNotExist =
       \`message\` varchar(100) DEFAULT NULL,
       \`time\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
       \`ip\` varchar(100) DEFAULT NULL
-    ) DEFAULT CHARSET=utf8mb4;`
+    ) DEFAULT CHARSET=utf8mb4;
+    
+    CREATE TABLE IF NOT EXISTS \`online\` (
+      \`user_id\` int(11) NOT NULL,
+      \`last_online\` timestamp NULL DEFAULT NULL,
+      UNIQUE KEY \`online_un\` (\`user_id\`)
+    ) DEFAULT CHARSET=utf8mb4;
+    
+    `
   ]
 
 for (let i in createTableIfNotExist) {
