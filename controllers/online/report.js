@@ -6,7 +6,7 @@ export async function onlineReportAPI(req, res) {
   try {
 
     let userID = req.body.userID;
-    if (!userID || !Number.isInteger(userID) || userID < 0) { // Wrong query
+    if (!userID) { // Wrong query
       let message = '参数错误'
       res.send({ code: 400, message })
       logger('', 'POST / 上报在线', 400, message, requestData(req).ip)

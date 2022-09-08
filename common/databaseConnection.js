@@ -28,7 +28,7 @@ let createTableIfNotExist =
     ) DEFAULT CHARSET=utf8mb4;`,
 
     `CREATE TABLE IF NOT EXISTS \`online\` (
-      \`user_id\` int(11) NOT NULL,
+      \`user_id\` varchar(100) NOT NULL,
       \`last_online\` timestamp NULL DEFAULT NULL,
       UNIQUE KEY \`online_un\` (\`user_id\`)
     ) DEFAULT CHARSET=utf8mb4;`
