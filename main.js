@@ -24,14 +24,6 @@ app.use('/v1/online', online)
 
 // let antiBot = {}
 app.all('*', function (req, res) { // 404
-  // // 反 Bot 计数
-  // if (antiBot[requestData(req).ip] === undefined) antiBot[requestData(req).ip] = { times: 1 }
-  // else antiBot[requestData(req).ip].times++
-  // antiBot.all = antiBot.all ? antiBot.all + 1 : 1
-  // // 触发拦截
-  // if (antiBot[requestData(req).ip].times > 5 || antiBot.all > 10) {
-  //   return console.log(`[${requestData(req).ip}]`, '404 未知 API, 已忽略')
-  // }
   let message = `未知 API`
   // res.send({ code: 404, message: '未知 API' })
   logger(req.originalUrl, 'UNKNOW', 404, message, requestData(req).ip)
@@ -40,10 +32,6 @@ app.all('*', function (req, res) { // 404
 const server = app.listen(7090, () => {
   console.log("[启动信息] 服务器已启动, 访问端口为: " + server.address().port)
 })
-
-setInterval(() => { // 每十分钟清除一次全局 404 计数
-  antiBot.all = 0
-}, 1000 * 60 * 10)
 
 setInterval(() => { // 每一小时会触发一次的定时任务
   console.log('[定时任务] 正在执行定时任务...');
