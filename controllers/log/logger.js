@@ -5,11 +5,12 @@ export default async function logger(key, type, code = '', message = '', ip = ''
   // if (typeof key !== 'string' || typeof type !== 'string' || typeof message !== 'string' || typeof ip !== 'string') {
   //   console.error('对 logger 提供的参数不正确或未提供')
   // }
-
-  dbQuery(
-    'INSERT INTO log (`key`, `type`, `code`, `message`, `ip`) VALUES (?,?,?,?,?)',
-    [key, type, code, message, ip]
-  )
+  if (type != 'UNKNOW') {
+    dbQuery(
+      'INSERT INTO log (`key`, `type`, `code`, `message`, `ip`) VALUES (?,?,?,?,?)',
+      [key, type, code, message, ip]
+    )
+  }
   let log = {
     time: `[${new Date().toLocaleTimeString()}]`,
     ip: ip ? `[${ip}]` : '',

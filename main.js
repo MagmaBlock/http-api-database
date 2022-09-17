@@ -22,18 +22,18 @@ import online from './router/online.js' // 在线量
 app.use('/v1', main);
 app.use('/v1/online', online)
 
-let antiBot = {}
+// let antiBot = {}
 app.all('*', function (req, res) { // 404
-  // 反 Bot 计数
-  if (antiBot[requestData(req).ip] === undefined) antiBot[requestData(req).ip] = { times: 1 }
-  else antiBot[requestData(req).ip].times++
-  antiBot.all = antiBot.all ? antiBot.all + 1 : 1
-  // 触发拦截
-  if (antiBot[requestData(req).ip].times > 5 || antiBot.all > 10) {
-    return console.log(`[${requestData(req).ip}]`, '404 未知 API, 已忽略')
-  }
-  let message = `未知 API, 触发 ${antiBot[requestData(req).ip].times} 次`
-  res.send({ code: 404, message: '未知 API' })
+  // // 反 Bot 计数
+  // if (antiBot[requestData(req).ip] === undefined) antiBot[requestData(req).ip] = { times: 1 }
+  // else antiBot[requestData(req).ip].times++
+  // antiBot.all = antiBot.all ? antiBot.all + 1 : 1
+  // // 触发拦截
+  // if (antiBot[requestData(req).ip].times > 5 || antiBot.all > 10) {
+  //   return console.log(`[${requestData(req).ip}]`, '404 未知 API, 已忽略')
+  // }
+  let message = `未知 API`
+  // res.send({ code: 404, message: '未知 API' })
   logger(req.originalUrl, 'UNKNOW', 404, message, requestData(req).ip)
 })
 
