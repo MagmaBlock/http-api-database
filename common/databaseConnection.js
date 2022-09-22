@@ -19,10 +19,10 @@ let createTableIfNotExist =
     ) DEFAULT CHARSET=utf8mb4;`,
 
     `CREATE TABLE IF NOT EXISTS \`log\` (
-      \`key\` varchar(100) NOT NULL,
+      \`key\` text NOT NULL,
       \`type\` varchar(100) NOT NULL,
       \`code\` varchar(100) NOT NULL,
-      \`message\` varchar(100) DEFAULT NULL,
+      \`message\` text DEFAULT NULL,
       \`time\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
       \`ip\` varchar(100) DEFAULT NULL
     ) DEFAULT CHARSET=utf8mb4;`,
