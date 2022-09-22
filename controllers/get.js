@@ -4,7 +4,7 @@ import requestData from "./request/requestData.js";
 import emojiParser from "./tools/emojiParser.js";
 import isJSON from "./tools/isJson.js";
 
-export default async function get(req, res) {
+export async function getAPI(req, res) {
   try {
 
     let key = req.params[0]; // 请求的ID
@@ -44,6 +44,31 @@ export default async function get(req, res) {
   }
 }
 
+// 高级查询 (POST)
+export async function advancedGetAPI(req, res) {
+  try {
+
+    if (!Array.isArray(req.body.keys) || req.body.keys.length == 0) return res.send({ code: 400, message: '请求参数不合法' })
+    let keys = req.body.keys
+
+    let result = await getValueByKeys(keys)
+
+    let message = '成功'
+    res.send({ code: 200, message, data: result })
+    logger(JSON.stringify(keys), 'GET+', 200, message, requestData(req).ip)
+
+  } catch (error) {
+
+    console.error(error, '执行 GETs 时发生错误! '); F
+    res.send({ code: 500, message: '服务器内部错误' })
+
+  }
+}
+
+// APIs
+// ============
+// Controllers
+
 async function getValueByKey(key) {
   let dbResult = await promiseDB.query(
     'SELECT * FROM `main` WHERE `key` = ?',
@@ -51,11 +76,31 @@ async function getValueByKey(key) {
   )
   if (dbResult[0].length == 0) return false // 如果找不到此 Key 直接返回 false
   let result = dbResult[0][0]
-  result.value = emojiParser.parse(result.value) // 解析转译后的 Emoji
-
-  if (isJSON(result.value)) { // 解析 JSON
-    result.value = JSON.parse(result.value);
-  }
-
+  result.value = resultParser(result.value)
   return result;
+}
+
+async function getValueByKeys(keys) {
+  let dbResult = await promiseDB.query(
+    'SELECT * FROM `main` WHERE `key` IN (?)',
+    [keys]
+  )
+  let result = {}
+  keys.forEach(key => { // 404 兜底
+    result[key] = null
+  })
+  dbResult[0].forEach(element => {
+    result[element.key] = resultParser(element.value)
+  })
+
+  return result
+}
+
+// 将数据库中的 String 解析为 JSON 和 emoji 等
+function resultParser(value) {
+  value = emojiParser.parse(value)
+  if (isJSON(value)) {
+    value = JSON.parse(value)
+  }
+  return value
 }
