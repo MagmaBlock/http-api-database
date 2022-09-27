@@ -5,7 +5,9 @@ import requestData from "./controllers/request/requestData.js";
 import { clearOldLogs } from "./controllers/log/logCleaner.js";
 
 const app = express(); // Express app
-app.use(express.json()); // use JSON body
+app.use(express.json({ // use JSON body
+  limit: '2mb'
+}));
 
 app.all('/*', async (req, res, next) => {
 
