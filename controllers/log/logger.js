@@ -19,7 +19,7 @@ export default async function logger(key, type, code = '', message = '', ip = ''
   switch (type) {
     case 'GET':
     case 'GET+':
-      typeLog = chalk.bgGreen.black(' ' + type + ' ')
+      typeLog = chalk.bgGreen(' ' + type + ' ')
       break;
     case 'POST':
       typeLog = chalk.bgBlue(' ' + type + ' ')
@@ -31,14 +31,14 @@ export default async function logger(key, type, code = '', message = '', ip = ''
   let codeLog
   switch (code) {
     case 200:
-      codeLog = chalk.bgGreen.black(' ' + code + ' ')
+      codeLog = chalk.bgGreen(' ' + code + ' ')
       break;
     case 404:
     case 400:
-      codeLog = chalk.bgYellow.black(' ' + code + ' ')
+      codeLog = chalk.bgYellow(' ' + code + ' ')
       break;
     case 500:
-      codeLog = chalk.bgRed.white(' ' + code + ' ')
+      codeLog = chalk.bgRed(' ' + code + ' ')
       break;
     default:
       codeLog = chalk.bgGray(' ' + code + ' ')
@@ -47,9 +47,9 @@ export default async function logger(key, type, code = '', message = '', ip = ''
 
   let log = {
     time: chalk.dim(new Date().toLocaleTimeString()) + ' ',
-    ip: chalk.bgBlueBright(' ' + ipCounter[ip] + ' ') + ' ' + chalk.gray(ip) + ' ',
+    ip: chalk.bgBlueBright(' ' + ipCounter[ip] + ' ') + ' ' + chalk.dim(ip) + ' ',
     typeAndKey: typeLog + codeLog + ' ' + (key ? key : '') + ' ',
-    result: chalk.gray(message)
+    result: chalk.dim(message)
   }
 
   console.log(log.time + log.ip + log.typeAndKey + log.result);
