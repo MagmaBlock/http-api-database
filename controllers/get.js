@@ -59,7 +59,7 @@ export async function advancedGetAPI(req, res) {
 
   } catch (error) {
 
-    console.error(error, '执行 GETs 时发生错误! '); F
+    console.error(error, '执行 GETs 时发生错误! ');
     res.send({ code: 500, message: '服务器内部错误' })
 
   }
