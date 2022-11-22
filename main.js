@@ -21,8 +21,10 @@ app.all('/*', async (req, res, next) => {
 
 import main from "./router/main.js"; // main router
 import online from './router/online.js' // 在线量
+import collect from './router/collect.js'
 app.use('/v1', main);
 app.use('/v1/online', online)
+app.use('/v1/collect', collect)
 
 // let antiBot = {}
 app.all('*', function (req, res) { // 404
