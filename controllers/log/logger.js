@@ -2,13 +2,19 @@ import dbQuery from "../tools/dbQuery.js";
 import chalk from "chalk";
 
 let ipCounter = {}
+let uCounter = {}
 
 export default async function logger(key, type, code = '', message = '', ip = '') {
-  if (!ipCounter[ip]) ipCounter[ip] = 1
-  else ipCounter[ip]++
-  // if (typeof key !== 'string' || typeof type !== 'string' || typeof message !== 'string' || typeof ip !== 'string') {
-  //   console.error('对 logger 提供的参数不正确或未提供')
-  // }
+
+  let useUCounter = key.startsWith('u_')
+  if (useUCounter) { // u_ 开头的 key 单独使用一个计数器
+    if (!uCounter[ip]) uCounter[ip] = 1
+    else uCounter[ip]++
+  } else {
+    if (!ipCounter[ip]) ipCounter[ip] = 1
+    else ipCounter[ip]++
+  }
+
   if (type != 'UNKNOW') {
     dbQuery(
       'INSERT INTO log (`key`, `type`, `code`, `message`, `ip`) VALUES (?,?,?,?,?)',
@@ -47,11 +53,15 @@ export default async function logger(key, type, code = '', message = '', ip = ''
 
   let log = {
     time: chalk.dim(new Date().toLocaleTimeString()) + ' ',
-    ip: chalk.bgBlueBright(' ' + ipCounter[ip] + ' ') + ' ' + chalk.dim(ip) + ' ',
+    counter:
+      useUCounter ?
+        chalk.bgYellowBright(` ${uCounter[ip]} `) + ' ' :
+        chalk.bgBlueBright(` ${ipCounter[ip]} `) + ' ',
+    ip: chalk.dim(ip) + ' ',
     typeAndKey: typeLog + codeLog + ' ' + (key ? key : '') + ' ',
     result: chalk.dim(message)
   }
 
-  console.log(log.time + log.ip + log.typeAndKey + log.result);
+  console.log(log.time + log.counter + log.ip + log.typeAndKey + log.result);
 
 }
