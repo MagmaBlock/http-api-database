@@ -6,7 +6,7 @@ import { clearOldLogs } from "./controllers/log/logCleaner.js";
 
 const app = express(); // Express app
 app.use(express.json({ // use JSON body
-  limit: '2mb'
+  limit: '4mb'
 }));
 
 app.all('/*', async (req, res, next) => {
@@ -21,10 +21,12 @@ app.all('/*', async (req, res, next) => {
 
 import main from "./router/main.js"; // main router
 import online from './router/online.js' // 在线量
-import collect from './router/collect.js'
+import collect from './router/collect.js' // 帖子收藏
+import temp from './router/temp.js' // 临时文件直链 
 app.use('/v1', main);
 app.use('/v1/online', online)
 app.use('/v1/collect', collect)
+app.use('/v1/temp', temp)
 
 // let antiBot = {}
 app.all('*', function (req, res) { // 404
