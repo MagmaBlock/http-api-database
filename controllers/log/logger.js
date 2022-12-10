@@ -12,12 +12,20 @@ function counter(cKey, cType = 'default') {
   }
 }
 
-
+let ipStore = {}
+function saveUserName(ip, name) {
+  ipStore[ip] = name
+}
+function getUserName(ip) {
+  if (ipStore[ip]) return `${ip}(${ipStore[ip]})`
+  else return ip
+}
 
 export default async function logger(req, query, message) {
   let ip = requestData(req).ip
   let time = new Date().toLocaleTimeString()
   let path = decodeURIComponent(req.path)
+  let user = getUserName(ip)
   let typeLog = ' ' + req.method + ' '
   typeLog = (() => {
     switch (req.method) {
@@ -30,10 +38,23 @@ export default async function logger(req, query, message) {
     }
   })()
 
+  // 如果有用户名上报, 暂存至内存
+  try {
+    if (query.toString().startsWith('u_')) { // 上报 u_ 时
+      let userName = query.toString().replace('u_', '')
+      saveUserName(ip, userName)
+    }
+    if (path == '/report') { // 上报在线状态时
+      saveUserName(ip, query.toString())
+    }
+  } catch (error) {
+    console.error('暂存 IP ID 时出错: ', error);
+  }
+
   try {
     dbQuery(
       'INSERT INTO log (`key`, `type`, `code`, `message`, `ip`) VALUES (?,?,?,?,?)',
-      [JSON.stringify(query), path, '', message, ip]
+      [JSON.stringify(query), path, '', message, user || ip]
     )
   } catch (error) {
     console.error(error);
@@ -43,7 +64,7 @@ export default async function logger(req, query, message) {
     chalk.green('=>'),
     chalk.dim(time),
     chalk.bgBlueBright(` ${counter(ip)} `),
-    chalk.dim(ip),
+    chalk.dim(user || ip),
     typeLog + chalk.bgGrey(` ${path} `),
     query,
     chalk.dim(message)
