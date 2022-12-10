@@ -24,11 +24,10 @@ export async function uploadFileAPI(req, res) {
   store[downloadKey] = {
     fileContent, fileName
   }
-  console.log(store);
   // 设置文件定时删除
   setTimeout(() => {
     delete store[downloadKey]
-    console.log('Deleted temp file', fileName);
+    console.log('删除过期临时文件: ', fileName);
   }, outDateTime);
 
   // 回复客户端
