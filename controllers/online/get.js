@@ -2,7 +2,8 @@ import { promiseDB } from "../../common/databaseConnection.js";
 import logger from "../log/logger.js";
 import requestData from "../request/requestData.js";
 
-export async function getOnlineUsers(req, res) {
+export async function getOnlineUsersAPI(req, res) {
+  let apiName = 'getOnlineUsersAPI'
   try {
 
     let threeDayBefore = new Date(new Date() - 1000 * 60 * 60 * 24 * 3)
@@ -18,7 +19,7 @@ export async function getOnlineUsers(req, res) {
 
     let message = `${threeDayBefore} 后登录用户`
     res.send({ code: 200, message, data: result })
-    logger('', 'GET / 在线人数', 200, message, requestData(req).ip)
+    logger(req, '', message)
 
   } catch (error) {
     console.error(error, '获取历史在线时出现错误!')

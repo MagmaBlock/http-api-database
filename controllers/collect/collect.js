@@ -1,4 +1,5 @@
 import { promiseDB } from "../../common/databaseConnection.js";
+import logger from "../log/logger.js";
 import { getTotalColl } from "./topic.js";
 
 // POST
@@ -13,7 +14,9 @@ export async function collectAPI(req, res) {
   try {
     await changeCollect(userID, topicID, collect) // undefined
     let total = await getTotalColl(topicID) // Number
-    res.send({ code: 200, message: '', data: { total } })
+    let message = '成功'
+    res.send({ code: 200, message, data: { total } })
+    logger(req, [userID, topicID, collect], message)
   } catch (error) {
     res.send({ code: 500, message: '服务器内部错误' })
   }
@@ -33,9 +36,9 @@ export async function getUserCollectAPI(req, res) {
         createTime: collect.create_time
       }
     })
-    res.send({
-      code: 200, message: '', data: parsedList
-    })
+    let message = '成功'
+    res.send({ code: 200, message, data: parsedList })
+    logger(req, userID, message)
   } catch (error) {
     res.send({ code: 500, message: '服务器内部错误' })
   }

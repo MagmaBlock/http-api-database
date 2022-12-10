@@ -1,12 +1,12 @@
 import { Router } from 'express';
 const router = Router();
 
-import { getAPI, advancedGetAPI } from "../controllers/get.js"
-import update from "../controllers/update.js"
+import { getKeyAPI, advancedGetAPI } from "../controllers/get.js"
+import updateKeyAPI from '../controllers/update.js';
 
-router.get('/get/*', getAPI); // 获取
+router.get('/get/*', getKeyAPI); // 获取
 router.post('/get', advancedGetAPI)
-router.post('/update', update) // 提交
+router.post('/update', updateKeyAPI) // 提交
 
 
 export default router;

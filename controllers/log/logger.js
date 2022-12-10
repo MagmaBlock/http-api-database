@@ -1,67 +1,105 @@
 import dbQuery from "../tools/dbQuery.js";
 import chalk from "chalk";
+import requestData from "../request/requestData.js";
 
-let ipCounter = {}
-let uCounter = {}
-
-export default async function logger(key, type, code = '', message = '', ip = '') {
-
-  let useUCounter = key.startsWith('u_')
-  if (useUCounter) { // u_ 开头的 key 单独使用一个计数器
-    if (!uCounter[ip]) uCounter[ip] = 1
-    else uCounter[ip]++
+let store = {}
+function counter(cKey, cType = 'default') {
+  if (!store[cType]) store[cType] = {}
+  if (store[cType][cKey]) {
+    return ++store[cType][cKey]
   } else {
-    if (!ipCounter[ip]) ipCounter[ip] = 1
-    else ipCounter[ip]++
+    return store[cType][cKey] = 1
   }
+}
 
-  if (type != 'UNKNOW') {
+
+
+export default async function logger(req, query, message) {
+  let ip = requestData(req).ip
+  let time = new Date().toLocaleTimeString()
+  let path = decodeURIComponent(req.path)
+  let typeLog = ' ' + req.method + ' '
+  typeLog = (() => {
+    switch (req.method) {
+      case 'GET':
+        return typeLog = chalk.bgGreen(typeLog)
+      case 'POST':
+        return typeLog = chalk.bgBlue(typeLog)
+      default:
+        return typeLog = chalk.bgGray(typeLog)
+    }
+  })()
+
+  try {
     dbQuery(
       'INSERT INTO log (`key`, `type`, `code`, `message`, `ip`) VALUES (?,?,?,?,?)',
-      [key, type, code, message, ip]
+      [JSON.stringify(query), path, '', message, ip]
     )
-  }
-  let typeLog
-  switch (type) {
-    case 'GET':
-    case 'GET+':
-      typeLog = chalk.bgGreen(' ' + type + ' ')
-      break;
-    case 'POST':
-      typeLog = chalk.bgBlue(' ' + type + ' ')
-      break;
-    default:
-      typeLog = chalk.bgGray(' ' + type + ' ')
-      break;
-  }
-  let codeLog
-  switch (code) {
-    case 200:
-      codeLog = chalk.bgGreen(' ' + code + ' ')
-      break;
-    case 404:
-    case 400:
-      codeLog = chalk.bgYellow(' ' + code + ' ')
-      break;
-    case 500:
-      codeLog = chalk.bgRed(' ' + code + ' ')
-      break;
-    default:
-      codeLog = chalk.bgGray(' ' + code + ' ')
-      break;
+  } catch (error) {
+    console.error(error);
   }
 
-  let log = {
-    time: chalk.dim(new Date().toLocaleTimeString()) + ' ',
-    counter:
-      useUCounter ?
-        chalk.bgYellowBright(` ${uCounter[ip]} `) + ' ' :
-        chalk.bgBlueBright(` ${ipCounter[ip]} `) + ' ',
-    ip: chalk.dim(ip) + ' ',
-    typeAndKey: typeLog + codeLog + ' ' + (key ? key : '') + ' ',
-    result: chalk.dim(message)
-  }
+  console.log(
+    chalk.green('=>'),
+    chalk.dim(time),
+    chalk.bgBlueBright(` ${counter(ip)} `),
+    chalk.dim(ip),
+    typeLog + chalk.bgGrey(` ${path} `),
+    query,
+    chalk.dim(message)
+  )
 
-  console.log(log.time + log.counter + log.ip + log.typeAndKey + log.result);
+  // let useUCounter = key.startsWith('u_') // u_ 开头的 key 单独使用一个计数器***
+
+  // if (type != 'UNKNOW') {
+  //   dbQuery(
+  //     'INSERT INTO log (`key`, `type`, `code`, `message`, `ip`) VALUES (?,?,?,?,?)',
+  //     [key, type, code, message, ip]
+  //   )
+  // }
+
+  // let typeLog = ' ' + type + ' '
+  // typeLog = (() => {
+  //   switch (type) {
+  //     case 'GET':
+  //       return typeLog = chalk.bgGreen(typeLog)
+  //     case 'POST':
+  //       return typeLog = chalk.bgBlue(typeLog)
+  //     default:
+  //       return typeLog = chalk.bgGray(typeLog)
+  //   }
+  // })()
+
+  // // Code Color
+  // let codeLog = ' ' + code + ' '
+  // codeLog = (() => {
+  //   switch (code) {
+  //     case 200:
+  //       return chalk.bgGreen(codeLog)
+  //     case 400:
+  //     case 401:
+  //     case 403:
+  //     case 404:
+  //       return chalk.bgYellow(codeLog)
+  //     case 500:
+  //     case 503:
+  //       return chalk.bgRed(codeLog)
+  //     default:
+  //       return chalk.bgGray(codeLog)
+  //   }
+  // })()
+
+  // let log = {
+  //   time: chalk.dim(new Date().toLocaleTimeString()) + ' ',
+  //   counter:
+  //     useUCounter ?
+  //       chalk.bgYellow(` ${counter(ip, 'u_')} `) + ' ' :
+  //       chalk.bgBlueBright(` ${counter(ip)} `) + ' ',
+  //   ip: chalk.dim(ip) + ' ',
+  //   typeAndKey: typeLog + codeLog + ' ' + (key ? key : '') + ' ',
+  //   result: chalk.dim(message)
+  // }
+
+  // console.log(log.time + log.counter + log.ip + log.typeAndKey + log.result);
 
 }

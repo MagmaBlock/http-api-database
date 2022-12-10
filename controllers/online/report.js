@@ -3,13 +3,14 @@ import logger from "../log/logger.js";
 import requestData from "../request/requestData.js";
 
 export async function onlineReportAPI(req, res) {
+  let apiName = 'onlineReportAPI'
   try {
 
     let userID = req.body.userID;
     if (!userID) { // Wrong query
       let message = '参数错误'
       res.send({ code: 400, message })
-      logger('', 'POST / 上报在线', 400, message, requestData(req).ip)
+      logger(req, userID, message)
       return
     }
 
@@ -30,17 +31,16 @@ export async function onlineReportAPI(req, res) {
     if (updateSuccess) {
       let message = '成功上报'
       res.send({ code: 200, message })
-      logger(userID, 'POST / 上报在线', 200, message, requestData(req).ip)
+      logger(req, userID, message)
     } else {
       let message = '服务器内部错误'
       res.send({ code: 500, message })
-      logger(userID, 'POST / 上报在线', 500, message, requestData(req).ip)
+      logger(req, userID, message)
     }
 
   } catch (error) {
     console.error(error, '处理上报在线时出现错误!')
     let message = '服务器内部错误'
-    logger(userID, 'POST / 上报在线', 500, message, requestData(req).ip)
     res.send({ code: 500, message })
     return
   }

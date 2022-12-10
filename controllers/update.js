@@ -4,8 +4,8 @@ import dbQuery from "./tools/dbQuery.js";
 import emojiParser from "./tools/emojiParser.js";
 import isJSON from "./tools/isJson.js";
 
-export default async function update(req, res) {
-
+export default async function updateKeyAPI(req, res) {
+  let apiName = 'updateKeyAPI'
   try {
 
     let key = req.body.key
@@ -14,7 +14,7 @@ export default async function update(req, res) {
     if (!key || isJSON(value) && value != '') {
       let message = '请求语法错误'
       res.send({ code: 400, message });
-      logger(key || '', 'POST', 400, message, requestData(req).ip)
+      logger(req, key, message)
       return
     }
 
@@ -23,19 +23,18 @@ export default async function update(req, res) {
     if (ifSuccess) {
       let message = '成功'
       res.send({ code: 200, message })
-      logger(key, 'POST', 200, message, requestData(req).ip)
+      logger(req, key, message)
     }
     else {
       let message = '插入或更新失败'
       res.send({ code: 500, message })
-      logger(key, 'POST', 500, message, requestData(req).ip)
+      logger(req, key, message)
     }
 
   } catch (error) {
-
-    console.error(error, '执行 UPDATE 时发生错误! ');
-    res.send({ code: 500, message: '服务器内部错误' })
-
+    let message = '服务器内部错误'
+    res.send({ code: 500, message })
+    logger(req, key, message)
   }
 
 }

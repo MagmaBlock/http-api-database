@@ -4,7 +4,8 @@ import requestData from "./request/requestData.js";
 import emojiParser from "./tools/emojiParser.js";
 import isJSON from "./tools/isJson.js";
 
-export async function getAPI(req, res) {
+export async function getKeyAPI(req, res) {
+  let apiName = 'getKeyAPI'
   try {
 
     let key = req.params[0]; // 请求的ID
@@ -12,7 +13,7 @@ export async function getAPI(req, res) {
     if (!key) { // 未提供 Key
       let message = '未提供 Key'
       res.send({ code: 400, message })
-      logger(key || '', 'GET', 400, message, requestData(req).ip)
+      logger(req, key, message)
       return;
     }
 
@@ -25,14 +26,14 @@ export async function getAPI(req, res) {
         lastUpdate: result.update_time ? result.update_time.getTime() : -1,
         key: result.key
       })
-      logger(key, 'GET', 200, message, requestData(req).ip)
+      logger(req, key, message)
       return;
     }
 
     if (!result) { // 找不到
       let message = '无此 Key'
       res.send({ code: 404, message, data: "" })
-      logger(key, 'GET', 404, message, requestData(req).ip)
+      logger(req, key, message)
       return;
     }
 
@@ -46,6 +47,7 @@ export async function getAPI(req, res) {
 
 // 高级查询 (POST)
 export async function advancedGetAPI(req, res) {
+  let apiName = 'advancedGetAPI'
   try {
 
     if (!Array.isArray(req.body.keys) || req.body.keys.length == 0) return res.send({ code: 400, message: '请求参数不合法' })
@@ -55,7 +57,7 @@ export async function advancedGetAPI(req, res) {
 
     let message = '成功'
     res.send({ code: 200, message, data: result })
-    logger(JSON.stringify(keys), 'GET+', 200, message, requestData(req).ip)
+    logger(req, keys, message)
 
   } catch (error) {
 

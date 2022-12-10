@@ -15,7 +15,6 @@ app.all('/*', async (req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*'); // 允许跨域
   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
 
-  requestData(req)
   next();
 });
 
@@ -32,7 +31,7 @@ app.use('/v1/temp', temp)
 app.all('*', function (req, res) { // 404
   let message = `未知 API`
   // res.send({ code: 404, message: '未知 API' })
-  logger(req.originalUrl, 'UNKNOW', 404, message, requestData(req).ip)
+  logger(req, '', message)
 })
 
 const server = app.listen(7090, () => {

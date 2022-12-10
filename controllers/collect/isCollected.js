@@ -1,4 +1,5 @@
 import { promiseDB } from "../../common/databaseConnection.js"
+import logger from "../log/logger.js"
 import { getCollectRecord } from "./collect.js"
 import { getTotalColl } from "./topic.js"
 
@@ -15,11 +16,13 @@ export async function isCollectedAPI(req, res) {
     let collected = collect[0] ? true : false // Boolean
     let collectTime = collect[0] ? new Date(collect[0].create_time).getTime() : -1 // Timestamp
 
+    let message = '成功'
     res.send({
-      code: 200, message: 'success', data: {
+      code: 200, message, data: {
         collected, collectTime, total
       }
     })
+    logger(req, [userID, topicID], message)
 
   } catch (error) {
     console.error(error, '\nisCollectedAPI 发生错误!')
