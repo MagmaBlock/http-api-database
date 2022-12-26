@@ -19,10 +19,10 @@ let createTableIfNotExist =
     ) DEFAULT CHARSET=utf8mb4;`,
 
     `CREATE TABLE IF NOT EXISTS \`log\` (
-      \`key\` text NOT NULL,
+      \`key\` varchar(100) NOT NULL,
       \`type\` varchar(100) NOT NULL,
       \`code\` varchar(100) NOT NULL,
-      \`message\` text DEFAULT NULL,
+      \`message\` varchar(100) DEFAULT NULL,
       \`time\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
       \`ip\` varchar(100) DEFAULT NULL
     ) DEFAULT CHARSET=utf8mb4;`,
@@ -37,6 +37,14 @@ let createTableIfNotExist =
       \`user_id\` varchar(100) NOT NULL,
       \`topic_id\` varchar(100) NOT NULL,
       \`create_time\` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+    ) DEFAULT CHARSET=utf8mb4;`,
+
+    `CREATE TABLE IF NOT EXISTS \`nsfw\` (
+      subject_id varchar(100) NOT NULL,
+      name varchar(100) NULL,
+      blocked BOOL NOT NULL,
+      score tinyint NULL,
+      CONSTRAINT nsfw_un UNIQUE KEY (subject_id)
     ) DEFAULT CHARSET=utf8mb4;`
   ]
 
