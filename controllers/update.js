@@ -1,5 +1,4 @@
 import logger from "./log/logger.js";
-import requestData from "./request/requestData.js";
 import dbQuery from "./tools/dbQuery.js";
 import emojiParser from "./tools/emojiParser.js";
 import isJSON from "./tools/isJson.js";

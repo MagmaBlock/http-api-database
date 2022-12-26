@@ -1,6 +1,5 @@
 import dbQuery from "../tools/dbQuery.js";
 import chalk from "chalk";
-import requestData from "../request/requestData.js";
 
 let store = {}
 function counter(cKey, cType = 'default') {
@@ -22,7 +21,7 @@ function getUserName(ip) {
 }
 
 export default async function logger(req, query, message) {
-  let ip = requestData(req).ip
+  let ip = req.ip
   let time = new Date().toLocaleTimeString()
   let path = decodeURIComponent(req.path)
   let user = getUserName(ip)

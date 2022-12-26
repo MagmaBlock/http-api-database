@@ -1,13 +1,13 @@
 import express from "express";
 
 import logger from "./controllers/log/logger.js";
-import requestData from "./controllers/request/requestData.js";
 import { clearOldLogs } from "./controllers/log/logCleaner.js";
 
 const app = express(); // Express app
 app.use(express.json({ // use JSON body
   limit: '4mb'
 }));
+app.set('trust proxy', config.nginxMode) // 允许 Express 信任上级代理提供的 IP 地址
 
 app.all('/*', async (req, res, next) => {
 
@@ -22,6 +22,7 @@ import main from "./router/main.js"; // main router
 import online from './router/online.js' // 在线量
 import collect from './router/collect.js' // 帖子收藏
 import temp from './router/temp.js' // 临时文件直链 
+import config from "./common/config.js";
 app.use('/v1', main);
 app.use('/v1/online', online)
 app.use('/v1/collect', collect)

@@ -1,6 +1,5 @@
 import { promiseDB } from "../../common/databaseConnection.js";
 import logger from "../log/logger.js";
-import requestData from "../request/requestData.js";
 
 export async function onlineReportAPI(req, res) {
   let apiName = 'onlineReportAPI'

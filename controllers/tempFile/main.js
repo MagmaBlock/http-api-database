@@ -1,6 +1,5 @@
 import { createHash } from 'crypto';
 import logger from '../log/logger.js';
-import requestData from '../request/requestData.js';
 
 let store = {
   /*
