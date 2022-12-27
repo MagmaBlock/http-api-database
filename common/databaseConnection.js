@@ -40,10 +40,12 @@ let createTableIfNotExist =
     ) DEFAULT CHARSET=utf8mb4;`,
 
     `CREATE TABLE IF NOT EXISTS \`nsfw\` (
-      subject_id varchar(100) NOT NULL,
-      name varchar(100) NULL,
-      blocked BOOL NOT NULL,
-      score tinyint NULL,
+      \`subject_id\` varchar(100) NOT NULL,
+      \`name\` varchar(100) NULL,
+      \`blocked\` BOOL NOT NULL,
+      \`score\` tinyint NULL,      
+      \`unknown\` tinyint(1) DEFAULT NULL,
+      \`create_time\` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
       CONSTRAINT nsfw_un UNIQUE KEY (subject_id)
     ) DEFAULT CHARSET=utf8mb4;`
   ]

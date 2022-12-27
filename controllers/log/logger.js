@@ -20,10 +20,16 @@ function getUserName(ip) {
   else return ip
 }
 
+/**
+ * Log 打印器, 会将 log 打印至控制台, 并保存至数据库
+ * @param {Object} req Express 请求体
+ * @param {*} query 查询, 一般是客户端的关键词, 将会打印在白字
+ * @param {*} message 消息, 将会以次要消息显示到控制台
+ */
 export default async function logger(req, query, message) {
   let ip = req.ip
   let time = new Date().toLocaleTimeString()
-  let path = decodeURIComponent(req.path)
+  let path = req.originalUrl.split('?')[0]
   let user = getUserName(ip)
   let typeLog = ' ' + req.method + ' '
   typeLog = (() => {
@@ -43,7 +49,7 @@ export default async function logger(req, query, message) {
       let userName = query.toString().replace('u_', '')
       saveUserName(ip, userName)
     }
-    if (path == '/report') { // 上报在线状态时
+    if (path == '/v1/online/report') { // 上报在线状态时
       saveUserName(ip, query.toString())
     }
   } catch (error) {
@@ -53,7 +59,7 @@ export default async function logger(req, query, message) {
   try {
     dbQuery(
       'INSERT INTO log (`key`, `type`, `code`, `message`, `ip`) VALUES (?,?,?,?,?)',
-      [JSON.stringify(query), path, '', message, user || ip]
+      [JSON.stringify(query), path, '', JSON.stringify(message), user || ip]
     )
   } catch (error) {
     console.error(error);
@@ -66,7 +72,7 @@ export default async function logger(req, query, message) {
     chalk.dim(user || ip),
     typeLog + chalk.bgGrey(` ${path} `),
     query,
-    chalk.dim(message)
+    chalk.dim(JSON.stringify(message))
   )
 
   // let useUCounter = key.startsWith('u_') // u_ 开头的 key 单独使用一个计数器***

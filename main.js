@@ -2,6 +2,7 @@ import express from "express";
 
 import logger from "./controllers/log/logger.js";
 import { clearOldLogs } from "./controllers/log/logCleaner.js";
+import config from "./common/config.js";
 
 const app = express(); // Express app
 app.use(express.json({ // use JSON body
@@ -22,11 +23,12 @@ import main from "./router/main.js"; // main router
 import online from './router/online.js' // 在线量
 import collect from './router/collect.js' // 帖子收藏
 import temp from './router/temp.js' // 临时文件直链 
-import config from "./common/config.js";
+import cdn from './router/cdn.js' // 图片 cdn 相关
 app.use('/v1', main);
 app.use('/v1/online', online)
 app.use('/v1/collect', collect)
 app.use('/v1/temp', temp)
+app.use('/v1/cdn', cdn)
 
 // let antiBot = {}
 app.all('*', function (req, res) { // 404
