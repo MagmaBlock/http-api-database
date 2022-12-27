@@ -5,7 +5,6 @@ import { promiseDB } from "../../common/databaseConnection.js"
 import logger from "../log/logger.js"
 
 export async function cdnGetImage(req, res) {
-  console.log(req.originalUrl);
   let requestPath = req.params[0]
   let eachPath = requestPath.split('/')
   let fileName = eachPath[eachPath.length - 1]
@@ -23,6 +22,12 @@ export async function cdnGetImage(req, res) {
   if (nsfw.blocked || nsfw.unknown) {
     logger(req, '拒绝回源', `[${nsfw.score}]${nsfw.blocked ? '(NSFW?)' : ''}${nsfw.unknown ? '过于冷门' : ''}`)
     return res.status(403).end()
+  }
+
+  // 补丁, 修复客户端首页回源不知道怎么回事带上的 ); URL 后缀
+  if (requestPath.endsWith('%29%3B')) {
+    console.log(req.originalUrl, '修复 %29%3B 后缀');
+    requestPath = requestPath.replace('%29%3B', '')
   }
 
   let imageFile
