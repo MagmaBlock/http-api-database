@@ -167,7 +167,7 @@ function isUnknown(subjectData) {
   Object.keys(subjectData.collection).forEach(collName => {
     totalColl = totalColl + subjectData.collection[collName]
   })
-  if (totalColl < 50) {
+  if (totalColl < 10) {
     return true
   } else return false
 }
