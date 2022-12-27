@@ -22,7 +22,7 @@ export async function cdnGetImage(req, res) {
   // nsfw 指数较高(>=8)或不知名条目将不再回源
   if (nsfw.blocked || nsfw.unknown) {
     logger(req, '拒绝回源', `[${nsfw.score}]${nsfw.blocked ? '(NSFW?)' : ''}${nsfw.unknown ? '过于冷门' : ''}`)
-    return res.status(403).end()
+    return res.status(404).end()
   }
 
   // 补丁, 修复客户端首页回源不知道怎么回事带上的 ); URL 后缀
