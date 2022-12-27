@@ -5,6 +5,7 @@ import { promiseDB } from "../../common/databaseConnection.js"
 import logger from "../log/logger.js"
 
 export async function cdnGetImage(req, res) {
+  console.log(req.originalUrl);
   let requestPath = req.params[0]
   let eachPath = requestPath.split('/')
   let fileName = eachPath[eachPath.length - 1]
