@@ -169,10 +169,10 @@ function isUnknown(subjectData) {
   Object.keys(subjectData.collection).forEach(collName => {
     totalColl = totalColl + subjectData.collection[collName]
   })
-  if (totalColl < 10) {
+  if (totalColl < 10) { // 收藏总量
     unknown = true
   }
-  if (subjectData.tags.length < 3) {
+  if (subjectData.tags.length < 3) { // 标签数量
     unknown = true
   }
   return unknown
