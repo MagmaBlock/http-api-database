@@ -1,4 +1,5 @@
 import axios from "axios"
+import chalk from "chalk"
 import dayjs from "dayjs"
 import { BangumiAPI } from "../../common/api.js"
 import { promiseDB } from "../../common/databaseConnection.js"
@@ -25,9 +26,9 @@ export async function cdnGetImage(req, res) {
   }
 
   // 补丁, 修复客户端首页回源不知道怎么回事带上的 ); URL 后缀
-  if (requestPath.endsWith('%29%3B')) {
-    console.log(req.originalUrl, '修复 %29%3B 后缀');
-    requestPath = requestPath.replace('%29%3B', '')
+  if (requestPath.endsWith(');')) {
+    console.log(chalk.bgYellowBright(' 修复异常后缀 '), chalk.bgGrey(req.originalUrl));
+    requestPath = requestPath.replace(');', '')
   }
 
   let imageFile
