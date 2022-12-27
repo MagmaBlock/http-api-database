@@ -165,10 +165,15 @@ async function isNSFW(subjectID) {
 function isUnknown(subjectData) {
   // 判断当前条目的收藏人数, 若太少, 将不再回源
   let totalColl = 0
+  let unknown = false
   Object.keys(subjectData.collection).forEach(collName => {
     totalColl = totalColl + subjectData.collection[collName]
   })
   if (totalColl < 10) {
-    return true
-  } else return false
+    unknown = true
+  }
+  if (subjectData.tags.length < 3) {
+    unknown = true
+  }
+  return unknown
 }
