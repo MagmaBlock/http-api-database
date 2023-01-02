@@ -29,7 +29,7 @@ function getUserName(ip) {
 export default async function logger(req, query, message) {
   let ip = req.ip
   let time = new Date().toLocaleTimeString()
-  let path = req.originalUrl.split('?')[0]
+  let path = decodeURIComponent(req.originalUrl.split('?')[0])
   let user = getUserName(ip)
   let typeLog = ' ' + req.method + ' '
   typeLog = (() => {
