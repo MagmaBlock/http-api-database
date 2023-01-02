@@ -70,7 +70,12 @@ export async function advancedGetAPI(req, res) {
 // ============
 // Controllers
 
-async function getValueByKey(key) {
+/**
+ * 通过键名获取存储的值
+ * @param {String} key 键名
+ * @returns {Object} 结果 value + update_time
+ */
+export async function getValueByKey(key) {
   let dbResult = await promiseDB.query(
     'SELECT * FROM `main` WHERE `key` = ?',
     [key]
@@ -81,7 +86,7 @@ async function getValueByKey(key) {
   return result;
 }
 
-async function getValueByKeys(keys) {
+export async function getValueByKeys(keys) {
   let dbResult = await promiseDB.query(
     'SELECT * FROM `main` WHERE `key` IN (?)',
     [keys]
