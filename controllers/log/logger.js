@@ -1,5 +1,6 @@
 import dbQuery from "../tools/dbQuery.js";
 import chalk from "chalk";
+import { getValueByKey } from "../get.js";
 
 let store = {}
 function counter(cKey, cType = 'default') {
@@ -16,7 +17,7 @@ function saveUserName(ip, name) {
   ipStore[ip] = name
 }
 function getUserName(ip) {
-  if (ipStore[ip]) return `${ip}(${ipStore[ip]})`
+  if (ipStore[ip]) return `${ip} ${ipStore[ip]}`
   else return ip
 }
 
@@ -47,10 +48,9 @@ export default async function logger(req, query, message) {
   try {
     if (query.toString().startsWith('u_')) { // 上报 u_ 时
       let userName = query.toString().replace('u_', '')
-      saveUserName(ip, userName)
-    }
-    if (path == '/v1/online/report') { // 上报在线状态时
-      saveUserName(ip, query.toString())
+      let userTag = `${userName}(${req.body?.value?.v || '?'})`
+      saveUserName(ip, userTag)
+      user = userTag
     }
   } catch (error) {
     console.error('暂存 IP ID 时出错: ', error);
