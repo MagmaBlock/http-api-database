@@ -17,8 +17,8 @@ function saveUserName(ip, name) {
   ipStore[ip] = name
 }
 function getUserName(ip) {
-  if (ipStore[ip]) return `${ip} ${ipStore[ip]}`
-  else return ip
+  if (ipStore[ip]) return `${ipStore[ip]}`
+  else return false
 }
 
 /**
@@ -69,7 +69,7 @@ export default async function logger(req, query, message) {
     chalk.green('=>'),
     chalk.dim(time),
     chalk.bgBlueBright(` ${counter(ip)} `),
-    chalk.dim(user || ip),
+    user ? user : chalk.dim(ip),
     typeLog + chalk.bgGrey(` ${path} `),
     query,
     chalk.dim(JSON.stringify(message))
