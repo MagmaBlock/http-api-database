@@ -56,7 +56,15 @@ export async function advancedGetAPI(req, res) {
 
     let message = '成功'
     res.send({ code: 200, message, data: result })
-    logger(req, keys, message)
+    let keyMsg = ''
+    keys.forEach((key, index) => {
+      if (index < 3) {
+        keyMsg = keyMsg + key + ' '
+      }
+    })
+    if (keys.length > 3) keyMsg = keyMsg + "等共" + keys.length + "个 Keys."
+    logger(req, keyMsg, message)
+
 
   } catch (error) {
 
