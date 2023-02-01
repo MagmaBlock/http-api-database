@@ -143,7 +143,8 @@ async function isNSFW(subjectID) {
   let nsfw = {
     name: subjectData.name_cn ?? subjectData.name,
     blocked: score >= 8 ? true : false, score: score, // 如果分数大于等于 8, 将会建议屏蔽
-    unknown: isUnknown(subjectData)
+    // unknown: isUnknown(subjectData)
+    unknown: false
   }
 
   try {
