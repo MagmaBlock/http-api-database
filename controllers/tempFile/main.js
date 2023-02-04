@@ -5,7 +5,7 @@ import logger from '../log/logger.js';
 let tempSaveTime = 5 * 60 * 1000 // 默认情况下一个文件的过期时间
 // 每五分钟将数据库中过期的文件清理一下
 setInterval(async () => {
-  let result = await promiseDB.query('DELETE FROM temp_file WHERE expire_time < current_time() AND expire_time ')
+  let result = await promiseDB.query('DELETE FROM temp_file WHERE expire_time < current_time() AND forever = 0')
   console.log("已清理过期临时文件:", result[0].affectedRows, "个.");
 }, 5 * 60 * 1000);
 
