@@ -47,8 +47,7 @@ export default async function logger(req, query, message) {
   // 如果有用户名上报, 暂存至内存
   try {
     if (query.toString().startsWith('u_')) { // 上报 u_ 时
-      let userName = query.toString().replace('u_', '')
-      let userTag = `${userName}(${req.body?.value?.v || '?'})`
+      let userTag = `${req.body?.value?.a ? '$ ' : ''}${query.toString().replace('u_', '')} ${req.body?.value?.v || '?'}${req.body?.value?.ipa ? '(ipa)' : ''}`
       saveUserName(ip, userTag)
       user = userTag
     }
