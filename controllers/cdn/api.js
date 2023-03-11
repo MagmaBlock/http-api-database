@@ -43,7 +43,7 @@ export async function cdnGetImage(req, res) {
       imageFile = image.data
     }
   } catch (error) {
-    if (error.response.status == 404) { // 源站报告无此图片
+    if (error?.response?.status == 404) { // 源站报告无此图片
       logger(req, '', 'lain.bgm.tv 报告 404')
       return res.status(404).end()
     }
