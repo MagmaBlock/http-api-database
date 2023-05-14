@@ -26,11 +26,13 @@ import online from "./router/online.js"; // 在线量
 import collect from "./router/collect.js"; // 帖子收藏
 import temp from "./router/temp.js"; // 临时文件直链
 import cdn from "./router/cdn.js"; // 图片 cdn 相关
+import topic from "./router/search.js"; // 小组帖子相关
 app.use("/v1", main);
 app.use("/v1/online", online);
 app.use("/v1/collect", collect);
 app.use("/v1/temp", temp);
 app.use("/v1/cdn", cdn);
+app.use("/v1/topic", topic);
 app.use("/pic/cover/*", (req, res) => {
   // 修复 DogeCode OSS 回源 BUG (偶尔不请求设定的前缀)
   res.redirect(302, "/v1/cdn/getimage" + req.baseUrl);
