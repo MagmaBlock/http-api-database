@@ -2,23 +2,23 @@ import dbQuery from "../tools/dbQuery.js";
 import chalk from "chalk";
 import { getValueByKey } from "../get.js";
 
-let store = {}
-function counter(cKey, cType = 'default') {
-  if (!store[cType]) store[cType] = {}
+let store = {};
+function counter(cKey, cType = "default") {
+  if (!store[cType]) store[cType] = {};
   if (store[cType][cKey]) {
-    return ++store[cType][cKey]
+    return ++store[cType][cKey];
   } else {
-    return store[cType][cKey] = 1
+    return (store[cType][cKey] = 1);
   }
 }
 
-let ipStore = {}
+let ipStore = {};
 function saveUserName(ip, name) {
-  ipStore[ip] = name
+  ipStore[ip] = name;
 }
 function getUserName(ip) {
-  if (ipStore[ip]) return `${ipStore[ip]}`
-  else return false
+  if (ipStore[ip]) return `${ipStore[ip]}`;
+  else return false;
 }
 
 /**
@@ -28,51 +28,56 @@ function getUserName(ip) {
  * @param {*} message 消息, 将会以次要消息显示到控制台
  */
 export default async function logger(req, query, message) {
-  let ip = req.ip
-  let time = new Date().toLocaleTimeString()
-  let path = decodeURIComponent(req.originalUrl.split('?')[0])
-  let user = getUserName(ip)
-  let typeLog = ' ' + req.method + ' '
+  let ip = req.ip;
+  let time = new Date().toLocaleTimeString();
+  let path = decodeURIComponent(req.originalUrl.split("?")[0]);
+  let user = getUserName(ip);
+  let typeLog = " " + req.method + " ";
   typeLog = (() => {
     switch (req.method) {
-      case 'GET':
-        return typeLog = chalk.bgGreen(typeLog)
-      case 'POST':
-        return typeLog = chalk.bgBlue(typeLog)
+      case "GET":
+        return (typeLog = chalk.bgGreen(typeLog));
+      case "POST":
+        return (typeLog = chalk.bgBlue(typeLog));
       default:
-        return typeLog = chalk.bgGray(typeLog)
+        return (typeLog = chalk.bgGray(typeLog));
     }
-  })()
+  })();
 
   // 如果有用户名上报, 暂存至内存
   try {
-    if (query.toString().startsWith('u_')) { // 上报 u_ 时
-      let userTag = `${req.body?.value?.a ? '$ ' : ''}${query.toString().replace('u_', '')} ${req.body?.value?.v || '?'}${req.body?.value?.ipa ? '(ipa)' : ''}`
-      saveUserName(ip, userTag)
-      user = userTag
+    if (query.toString().startsWith("u_")) {
+      // 上报 u_ 时
+      let userTag = `${req.body?.value?.a ? "$ " : ""}${query
+        .toString()
+        .replace("u_", "")} ${req.body?.value?.v || "?"}${
+        req.body?.value?.ipa ? "(ipa)" : ""
+      }`;
+      saveUserName(ip, userTag);
+      user = userTag;
     }
   } catch (error) {
-    console.error('暂存 IP ID 时出错: ', error);
+    console.error("暂存 IP ID 时出错: ", error);
   }
 
   try {
     dbQuery(
-      'INSERT INTO log (`key`, `type`, `code`, `message`, `ip`) VALUES (?,?,?,?,?)',
-      [JSON.stringify(query), path, '', JSON.stringify(message), user || ip]
-    )
+      "INSERT INTO log (`key`, `type`, `code`, `message`, `ip`) VALUES (?,?,?,?,?)",
+      [JSON.stringify(query), path, "", JSON.stringify(message), user || ip]
+    );
   } catch (error) {
     console.error(error);
   }
 
   console.log(
-    chalk.green('=>'),
+    chalk.green("=>"),
     chalk.dim(time),
     chalk.bgBlueBright(` ${counter(ip)} `),
     user ? user : chalk.dim(ip),
     typeLog + chalk.bgGrey(` ${path} `),
     query,
     chalk.dim(JSON.stringify(message))
-  )
+  );
 
   // let useUCounter = key.startsWith('u_') // u_ 开头的 key 单独使用一个计数器***
 
@@ -126,5 +131,4 @@ export default async function logger(req, query, message) {
   // }
 
   // console.log(log.time + log.counter + log.ip + log.typeAndKey + log.result);
-
 }

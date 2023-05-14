@@ -8,13 +8,13 @@ export default {
   nginxMode: true,
   // MySQL
   mysql: {
-    host: 'localhost',
+    host: "localhost",
     port: 3306,
-    user: 'HTTPDB',
-    database: 'httpdb',
-    password: 'httpdb',
-    charset: 'utf8mb4' // 支持 utf8mb4 编码，支持 Emoji
+    user: "HTTPDB",
+    database: "httpdb",
+    password: "httpdb",
+    charset: "utf8mb4", // 支持 utf8mb4 编码，支持 Emoji
   },
   // 日志删除时间, 默认为 7 天前. 最右侧的值为天
-  logDeleteTime: 1000 * 60 * 60 * 24 * 7 // ← 天, (ms)
-}
+  logDeleteTime: 1000 * 60 * 60 * 24 * 7, // ← 天, (ms)
+};
