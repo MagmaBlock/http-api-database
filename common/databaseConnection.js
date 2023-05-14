@@ -56,7 +56,7 @@ let createTableIfNotExist = [
       UNIQUE KEY \`temp_file_un\` (\`key\`)
     ) DEFAULT CHARSET=utf8mb4;`,
 
-  `CREATE TABLE \`topic\` (
+  `CREATE TABLE IF NOT EXISTS \`topic\` (
       \`id\` int NOT NULL,
       \`title\` varchar(100) DEFAULT NULL,
       \`message\` varchar(1000) DEFAULT NULL,
