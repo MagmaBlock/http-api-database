@@ -55,6 +55,22 @@ let createTableIfNotExist = [
       \`forever\` tinyint(1) NOT NULL DEFAULT '0',
       UNIQUE KEY \`temp_file_un\` (\`key\`)
     ) DEFAULT CHARSET=utf8mb4;`,
+
+  `CREATE TABLE \`topic\` (
+      \`id\` int NOT NULL,
+      \`title\` varchar(100) DEFAULT NULL,
+      \`message\` varchar(1000) DEFAULT NULL,
+      \`userId\` varchar(50) DEFAULT NULL,
+      \`userName\` varchar(50) DEFAULT NULL,
+      \`avatar\` varchar(100) DEFAULT NULL,
+      \`group\` varchar(50) DEFAULT NULL,
+      \`groupHref\` varchar(50) DEFAULT NULL,
+      \`groupThumb\` varchar(100) DEFAULT NULL,
+      \`time\` datetime DEFAULT NULL,
+      PRIMARY KEY (\`id\`),
+      FULLTEXT KEY \`topic_title_IDX\` (\`title\`) /*!50100 WITH PARSER \`ngram\` */ ,
+      FULLTEXT KEY \`topic_message_IDX\` (\`message\`) /*!50100 WITH PARSER \`ngram\` */ 
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;`,
 ];
 
 for (let i in createTableIfNotExist) {
