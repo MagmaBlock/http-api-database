@@ -46,7 +46,7 @@ export default async function logger(req, query, message) {
 
   // 如果有用户名上报, 暂存至内存
   try {
-    if (query.toString().startsWith("u_")) {
+    if (query.toString().startsWith("u_") && req.method == "POST") {
       // 上报 u_ 时
       let userTag = `${req.body?.value?.a ? "$ " : ""}${query
         .toString()
