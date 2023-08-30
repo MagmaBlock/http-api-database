@@ -97,7 +97,8 @@ function userPrinter(user) {
   } else {
     result += chalk.bgGray(` ${distance == -1 ? '×' : distance} `)
   }
-  result += chalk.bgGrey(` ${user?.clientVersion ?? '?'} `)
+  result += chalk.bgGrey(` ${user?.clientVersion ?? '?'}`)
+  result += user?.isIPA? chalk.bgGray(` IPA `) : chalk.bgGray(` `)
 
   return result;
 }
