@@ -95,7 +95,7 @@ function userPrinter(user) {
   } else if (distance != -1) {
     result += chalk.bgBlue(` ${distance} `)
   } else {
-    result += chalk.bgRed(` × `)
+    result += chalk.bgYellow(` × `)
   }
   result += chalk.bgGrey(` ${user?.clientVersion ?? '?'} `)
 
