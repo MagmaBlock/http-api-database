@@ -67,7 +67,7 @@ export default async function logger(req, query, message) {
 
   console.log(
     chalk.dim(time),
-    chalk.bgBlueBright(` ${counter(ip)} `),
+    countPrinter(counter(ip)),
     user ? userPrinter(user) : chalk.dim(ip),
     typeLog + chalk.bgGrey(` ${path} `),
     query,
@@ -98,7 +98,17 @@ function userPrinter(user) {
     result += chalk.bgGray(` ${distance == -1 ? '×' : distance} `)
   }
   result += chalk.bgGrey(` ${user?.clientVersion ?? '?'}`)
-  result += user?.isIPA? chalk.bgGray(` IPA `) : chalk.bgGray(` `)
+  result += user?.isIPA ? chalk.bgGray(` IPA `) : chalk.bgGray(` `)
 
   return result;
+}
+
+function countPrinter(count) {
+  if (count < 50) {
+    return chalk.bgGray(` ${count} `)
+  } else if (count < 100) {
+    return chalk.bgBlue(` ${count} `)
+  } else {
+    return chalk.bgGreen(` ${count} `)
+  }
 }
