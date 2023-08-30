@@ -1,7 +1,8 @@
 import dbQuery from "../tools/dbQuery.js";
 import chalk from "chalk";
-import { getValueByKey } from "../get.js";
+import { VersionTool } from "./appVersion/versionTool.js";
 
+// 存储访问次数
 let store = {};
 function counter(cKey, cType = "default") {
   if (!store[cType]) store[cType] = {};
@@ -12,14 +13,8 @@ function counter(cKey, cType = "default") {
   }
 }
 
+// 存储某 IP 下用户信息
 let ipStore = {};
-function saveUserName(ip, name) {
-  ipStore[ip] = name;
-}
-function getUserName(ip) {
-  if (ipStore[ip]) return `${ipStore[ip]}`;
-  else return false;
-}
 
 /**
  * Log 打印器, 会将 log 打印至控制台, 并保存至数据库
@@ -31,8 +26,8 @@ export default async function logger(req, query, message) {
   let ip = req.ip;
   let time = new Date().toLocaleTimeString();
   let path = decodeURIComponent(req.originalUrl.split("?")[0]);
-  let user = getUserName(ip);
-  let typeLog = " " + req.method + " ";
+  let user = ipStore[ip] ?? null;
+  let typeLog = ` ${req.method} `;
   typeLog = (() => {
     switch (req.method) {
       case "GET":
@@ -48,13 +43,14 @@ export default async function logger(req, query, message) {
   try {
     if (query.toString().startsWith("u_") && req.method == "POST") {
       // 上报 u_ 时
-      let userTag = `${req.body?.value?.a ? "$ " : ""}${query
-        .toString()
-        .replace("u_", "")} ${req.body?.value?.v || "?"}${
-        req.body?.value?.ipa ? "(ipa)" : ""
-      }`;
-      saveUserName(ip, userTag);
-      user = userTag;
+      let userInfo = {
+        isPayed: req.body?.value?.a,
+        userID: query.toString().replace("u_", ""),
+        clientVersion: req.body?.value?.v,
+        isIPA: req.body?.value?.ipa
+      }
+      ipStore[ip] = userInfo;
+      user = userInfo;
     }
   } catch (error) {
     console.error("暂存 IP ID 时出错: ", error);
@@ -63,72 +59,45 @@ export default async function logger(req, query, message) {
   try {
     dbQuery(
       "INSERT INTO log (`key`, `type`, `code`, `message`, `ip`) VALUES (?,?,?,?,?)",
-      [JSON.stringify(query), path, "", JSON.stringify(message), user || ip]
+      [JSON.stringify(query), path, "", JSON.stringify(message), user?.userID || ip]
     );
   } catch (error) {
     console.error(error);
   }
 
   console.log(
-    chalk.green("=>"),
     chalk.dim(time),
     chalk.bgBlueBright(` ${counter(ip)} `),
-    user ? user : chalk.dim(ip),
+    user ? userPrinter(user) : chalk.dim(ip),
     typeLog + chalk.bgGrey(` ${path} `),
     query,
     chalk.dim(JSON.stringify(message))
   );
+}
 
-  // let useUCounter = key.startsWith('u_') // u_ 开头的 key 单独使用一个计数器***
 
-  // if (type != 'UNKNOW') {
-  //   dbQuery(
-  //     'INSERT INTO log (`key`, `type`, `code`, `message`, `ip`) VALUES (?,?,?,?,?)',
-  //     [key, type, code, message, ip]
-  //   )
-  // }
+const versionTool = new VersionTool();
 
-  // let typeLog = ' ' + type + ' '
-  // typeLog = (() => {
-  //   switch (type) {
-  //     case 'GET':
-  //       return typeLog = chalk.bgGreen(typeLog)
-  //     case 'POST':
-  //       return typeLog = chalk.bgBlue(typeLog)
-  //     default:
-  //       return typeLog = chalk.bgGray(typeLog)
-  //   }
-  // })()
+function userPrinter(user) {
+  let result = "";
+  if (user?.isPayed) {
+    result += chalk.yellowBright(user?.userID)
+  } else {
+    result += user?.userID
+  }
 
-  // // Code Color
-  // let codeLog = ' ' + code + ' '
-  // codeLog = (() => {
-  //   switch (code) {
-  //     case 200:
-  //       return chalk.bgGreen(codeLog)
-  //     case 400:
-  //     case 401:
-  //     case 403:
-  //     case 404:
-  //       return chalk.bgYellow(codeLog)
-  //     case 500:
-  //     case 503:
-  //       return chalk.bgRed(codeLog)
-  //     default:
-  //       return chalk.bgGray(codeLog)
-  //   }
-  // })()
+  result += " "
 
-  // let log = {
-  //   time: chalk.dim(new Date().toLocaleTimeString()) + ' ',
-  //   counter:
-  //     useUCounter ?
-  //       chalk.bgYellow(` ${counter(ip, 'u_')} `) + ' ' :
-  //       chalk.bgBlueBright(` ${counter(ip)} `) + ' ',
-  //   ip: chalk.dim(ip) + ' ',
-  //   typeAndKey: typeLog + codeLog + ' ' + (key ? key : '') + ' ',
-  //   result: chalk.dim(message)
-  // }
+  let distance = versionTool.getLatestDistance(user?.clientVersion)
 
-  // console.log(log.time + log.counter + log.ip + log.typeAndKey + log.result);
+  if (distance == 0) {
+    result += chalk.bgGreen(` √ `)
+  } else if (distance != -1) {
+    result += chalk.bgBlue(` ${distance} `)
+  } else {
+    result += chalk.bgRed(` × `)
+  }
+  result += chalk.bgGrey(` ${user?.clientVersion ?? '?'} `)
+
+  return result;
 }
