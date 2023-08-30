@@ -16,11 +16,8 @@ export class VersionTool {
       for (let index in releaseVersions.data) {
         let version = releaseVersions.data[index];
         this.versionList.push(version.tag_name);
-
-        // 只取最新的 5 个版本
-        if (index >= 4) break;
       }
-      console.log('✅ 已抓取 GitHub Release 版本。最新的 5 个版本是:', this.versionList);
+      console.log('✅ 已抓取 GitHub Release 版本:', this.versionList);
       return this.versionList;
     } catch (error) {
       if (error instanceof AxiosError) {

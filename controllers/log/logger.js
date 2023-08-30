@@ -92,10 +92,10 @@ function userPrinter(user) {
 
   if (distance == 0) {
     result += chalk.bgGreen(` √ `)
-  } else if (distance != -1) {
+  } else if (distance != -1 && distance <= 5) {
     result += chalk.bgBlue(` ${distance} `)
   } else {
-    result += chalk.bgYellow(` × `)
+    result += chalk.bgGray(` ${distance == -1 ? '×' : distance} `)
   }
   result += chalk.bgGrey(` ${user?.clientVersion ?? '?'} `)
 
