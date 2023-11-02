@@ -49,14 +49,40 @@ export async function getKeyAPI(req, res) {
 export async function advancedGetAPI(req, res) {
   let apiName = "advancedGetAPI";
   try {
-    if (!Array.isArray(req.body.keys) || req.body.keys.length == 0)
-      return res.send({ code: 400, message: "请求参数不合法" });
-    let keys = req.body.keys;
+    let { keys, picker } = req.body;
+
+    // 守卫
+    if (!Array.isArray(keys) || (picker && !Array.isArray(picker))) {
+      return res.send({ code: 400, message: "请求错误" });
+    }
 
     let result = await getValueByKeys(keys);
 
+    // 过滤器
+    if (picker) {
+      for (let key in result) {
+        // 判断是 Map 对象
+        if (
+          typeof result[key] === "object" &&
+          !Array.isArray(result[key]) &&
+          result[key] !== null
+        ) {
+          // 只提取 picker 含有的键
+          let value = result[key];
+          let newValue = {};
+          for (let keyNameIndex in picker) {
+            let keyName = picker[keyNameIndex];
+            newValue[keyName] = value[keyName];
+          }
+          result[key] = newValue;
+        }
+      }
+    }
+
     let message = "成功";
     res.send({ code: 200, message, data: result });
+
+    // Log
     let keyMsg = "";
     keys.forEach((key, index) => {
       if (index < 3) {
@@ -64,6 +90,7 @@ export async function advancedGetAPI(req, res) {
       }
     });
     if (keys.length > 3) keyMsg = keyMsg + "等共" + keys.length + "个 Keys.";
+
     logger(req, keyMsg, message);
   } catch (error) {
     console.error(error, "执行 GETs 时发生错误! ");
