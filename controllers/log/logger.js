@@ -47,8 +47,9 @@ export default async function logger(req, query, message) {
         isPayed: req.body?.value?.a,
         userID: query.toString().replace("u_", ""),
         clientVersion: req.body?.value?.v,
-        isIPA: req.body?.value?.ipa
-      }
+        isIPA: req.body?.value?.ipa,
+        n: req.body?.value?.n,
+      };
       ipStore[ip] = userInfo;
       user = userInfo;
     }
@@ -59,56 +60,66 @@ export default async function logger(req, query, message) {
   try {
     dbQuery(
       "INSERT INTO log (`key`, `type`, `code`, `message`, `ip`) VALUES (?,?,?,?,?)",
-      [JSON.stringify(query), path, "", JSON.stringify(message), user?.userID || ip]
+      [
+        JSON.stringify(query),
+        path,
+        "",
+        JSON.stringify(message),
+        user?.userID || ip,
+      ]
     );
   } catch (error) {
     console.error(error);
   }
 
   console.log(
-    chalk.dim(time),
-    countPrinter(counter(ip)),
-    user ? userPrinter(user) : chalk.dim(ip),
-    typeLog + chalk.bgGrey(` ${path} `),
-    query,
-    chalk.dim(JSON.stringify(message))
+    [
+      chalk.dim(time),
+      user?.n ? chalk.bgMagenta(user?.n) : null,
+      countPrinter(counter(ip)),
+      user ? userPrinter(user) : chalk.dim(ip),
+      typeLog + chalk.bgGrey(` ${path} `),
+      query,
+      chalk.dim(JSON.stringify(message)),
+    ]
+      .filter((logBlock) => logBlock)
+      .join(" ")
   );
 }
-
 
 const versionTool = new VersionTool();
 
 function userPrinter(user) {
   let result = "";
   if (user?.isPayed) {
-    result += chalk.yellowBright(user?.userID)
+    result += chalk.yellowBright(user?.userID);
   } else {
-    result += user?.userID
+    result += user?.userID;
   }
 
-  result += " "
+  result += " ";
 
-  let distance = versionTool.getLatestDistance(user?.clientVersion)
+  let distance = versionTool.getLatestDistance(user?.clientVersion);
 
   if (distance == 0) {
-    result += chalk.bgGreen(` √ `)
+    result += chalk.bgGreen(` √ `);
   } else if (distance != -1 && distance <= 5) {
-    result += chalk.bgBlue(` ${distance} `)
+    result += chalk.bgBlue(` ${distance} `);
   } else {
-    result += chalk.bgGray(` ${distance == -1 ? '×' : distance} `)
+    result += chalk.bgGray(` ${distance == -1 ? "×" : distance} `);
   }
-  result += chalk.bgGrey(` ${user?.clientVersion ?? '?'}`)
-  result += user?.isIPA ? chalk.bgGray(` IPA `) : chalk.bgGray(` `)
+  result += chalk.bgGrey(` ${user?.clientVersion ?? "?"}`);
+  result += user?.isIPA ? chalk.bgGray(` IPA `) : chalk.bgGray(` `);
 
   return result;
 }
 
 function countPrinter(count) {
   if (count < 50) {
-    return chalk.bgGray(` ${count} `)
+    return chalk.bgGray(` ${count} `);
   } else if (count < 100) {
-    return chalk.bgBlue(` ${count} `)
+    return chalk.bgBlue(` ${count} `);
   } else {
-    return chalk.bgGreen(` ${count} `)
+    return chalk.bgGreen(` ${count} `);
   }
 }
