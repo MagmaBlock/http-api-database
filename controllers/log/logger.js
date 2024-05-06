@@ -75,7 +75,7 @@ export default async function logger(req, query, message) {
   console.log(
     [
       chalk.dim(time),
-      user?.n ? chalk.bgMagenta(user?.n) : null,
+      user?.n ? chalk.bgMagenta(` ${user?.n} `) : null,
       countPrinter(counter(ip)),
       user ? userPrinter(user) : chalk.dim(ip),
       typeLog + chalk.bgGrey(` ${path} `),
