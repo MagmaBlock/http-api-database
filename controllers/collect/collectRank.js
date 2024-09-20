@@ -3,7 +3,7 @@ import logger from "../log/logger.js";
 
 export async function collectRankAPI(req, res) {
   const { startTime, endTime, count = 100, startsWith } = req.body;
-  
+
   // 检查 count 是否为数字
   if (isNaN(parseInt(count))) {
     return res.send({ code: 400, message: "count 必须是数字" });
@@ -12,24 +12,25 @@ export async function collectRankAPI(req, res) {
   // 将 count 转换为整数
   const limitCount = parseInt(count);
 
-  if (
-    startTime &&
-    !(new Date(startTime) instanceof Date && !isNaN(new Date(startTime)))
-  ) {
+  // 检查 startTime 和 endTime 是否为正确的日期格式
+  const checkDate = (date) => {
+    return date && !(new Date(date) instanceof Date && !isNaN(new Date(date)));
+  };
+
+  if (startTime && checkDate(startTime)) {
     return res.send({ code: 400, message: "开始时间格式不正确" });
   }
 
-  if (
-    endTime &&
-    !(new Date(endTime) instanceof Date && !isNaN(new Date(endTime)))
-  ) {
+  if (endTime && checkDate(endTime)) {
     return res.send({ code: 400, message: "结束时间格式不正确" });
   }
 
+  // 检查开始时间是否晚于结束时间
   if (startTime && endTime && new Date(startTime) > new Date(endTime)) {
     return res.send({ code: 400, message: "开始时间不能晚于结束时间" });
   }
 
+  // 检查 startsWith 是否为字符串
   if (startsWith !== undefined && typeof startsWith !== "string") {
     return res.send({ code: 400, message: "startsWith 必须是字符串" });
   }
@@ -41,6 +42,7 @@ export async function collectRankAPI(req, res) {
   `;
   const queryParams = [];
 
+  // 根据条件添加查询参数
   if (startTime) {
     query += " AND create_time >= ?";
     queryParams.push(new Date(startTime));
