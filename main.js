@@ -26,11 +26,13 @@ import online from "./router/online.js"; // 在线量
 import collect from "./router/collect.js"; // 帖子收藏
 import temp from "./router/temp.js"; // 临时文件直链
 import topic from "./router/topic.js"; // 小组帖子相关
+import jieba from "./router/jieba.js"; // 结巴分词
 app.use("/v1", main);
 app.use("/v1/online", online);
 app.use("/v1/collect", collect);
 app.use("/v1/temp", temp);
 app.use("/v1/topic", topic);
+app.use("/v1/jieba", jieba);
 
 app.get("/favicon.ico", (req, res) => {
   return res.status(404).send("");
