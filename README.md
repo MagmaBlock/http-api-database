@@ -1,5 +1,7 @@
 # HTTP-API-Database
 
-一个用 NodeJS 做的 HTTP API 数据库，能实现查删增改操作。
+仅供个人使用的一个 API
 
-为 [czy0729/Bangumi](https://github.com/czy0729/Bangumi) 服务
+## 环境变量配置
+
+参考 [config.js](./common/config.js)

@@ -11,7 +11,7 @@ app.use(
     limit: "4mb",
   })
 );
-app.set("trust proxy", config.nginxMode); // 允许 Express 信任上级代理提供的 IP 地址
+app.set("trust proxy", config.reverseProxy); // 允许 Express 信任上级代理提供的 IP 地址
 
 app.all("/*", async (req, res, next) => {
   res.header("Content-Type", "application/json"); // 指定客户端请求的属性
@@ -45,7 +45,7 @@ app.all("*", function (req, res) {
   logger(req, "", message);
 });
 
-const server = app.listen(7090, () => {
+const server = app.listen(config.port, () => {
   console.log("[启动信息] 服务器已启动, 访问端口为: " + server.address().port);
 });
 

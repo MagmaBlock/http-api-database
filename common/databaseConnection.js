@@ -1,7 +1,8 @@
 import mysql from "mysql2";
 import config from "./config.js";
 
-const db = mysql.createPool(config.mysql);
+// 使用 MySQL URI 直接创建连接池
+const db = mysql.createPool(config.databaseUrl);
 const promiseDB = db.promise(); // mysql2 promise api
 export default db;
 export { promiseDB };
