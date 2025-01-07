@@ -35,7 +35,7 @@ export default async function logger(req, query, message) {
   const ip = req.ip;
   const time = new Date().toLocaleTimeString();
   const path = decodeURIComponent(req.originalUrl.split("?")[0]);
-  const user = ipStore.get(ip) ?? null;
+  let user = ipStore.get(ip) ?? null;
   const typeLog = getMethodLog(req.method);
 
   // 如果有用户名上报, 暂存至内存
