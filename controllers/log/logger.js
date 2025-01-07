@@ -2,19 +2,28 @@ import dbQuery from "../tools/dbQuery.js";
 import chalk from "chalk";
 import { VersionTool } from "./appVersion/versionTool.js";
 
-// 存储访问次数
-let store = {};
+// 使用Map存储访问次数，提高性能
+const store = new Map();
+
+/**
+ * 计数器，统计指定key的访问次数
+ * @param {string} cKey 计数key
+ * @param {string} [cType="default"] 计数类型
+ * @returns {number} 当前计数
+ */
 function counter(cKey, cType = "default") {
-  if (!store[cType]) store[cType] = {};
-  if (store[cType][cKey]) {
-    return ++store[cType][cKey];
-  } else {
-    return (store[cType][cKey] = 1);
+  if (!store.has(cType)) {
+    store.set(cType, new Map());
   }
+  const typeStore = store.get(cType);
+  const count = (typeStore.get(cKey) || 0) + 1;
+  typeStore.set(cKey, count);
+  return count;
 }
 
-// 存储某 IP 下用户信息
-let ipStore = {};
+// 使用Map存储IP对应的用户信息
+const ipStore = new Map();
+
 
 /**
  * Log 打印器, 会将 log 打印至控制台, 并保存至数据库
@@ -23,72 +32,119 @@ let ipStore = {};
  * @param {*} message 消息, 将会以次要消息显示到控制台
  */
 export default async function logger(req, query, message) {
-  let ip = req.ip;
-  let time = new Date().toLocaleTimeString();
-  let path = decodeURIComponent(req.originalUrl.split("?")[0]);
-  let user = ipStore[ip] ?? null;
-  let typeLog = ` ${req.method} `;
-  typeLog = (() => {
-    switch (req.method) {
-      case "GET":
-        return (typeLog = chalk.bgGreen(typeLog));
-      case "POST":
-        return (typeLog = chalk.bgBlue(typeLog));
-      default:
-        return (typeLog = chalk.bgGray(typeLog));
-    }
-  })();
+  const ip = req.ip;
+  const time = new Date().toLocaleTimeString();
+  const path = decodeURIComponent(req.originalUrl.split("?")[0]);
+  const user = ipStore.get(ip) ?? null;
+  const typeLog = getMethodLog(req.method);
 
   // 如果有用户名上报, 暂存至内存
-  try {
-    if (query.toString().startsWith("u_") && req.method == "POST") {
-      // 上报 u_ 时
-      let userInfo = {
+  if (query.toString().startsWith("u_") && req.method === "POST") {
+    try {
+      const userInfo = {
         isPayed: req.body?.value?.a,
         userID: query.toString().replace("u_", ""),
         clientVersion: req.body?.value?.v,
         isIPA: req.body?.value?.ipa,
         n: req.body?.value?.n,
       };
-      ipStore[ip] = userInfo;
+      ipStore.set(ip, userInfo);
       user = userInfo;
+    } catch (error) {
+      console.error("暂存 IP ID 时出错: ", error);
     }
-  } catch (error) {
-    console.error("暂存 IP ID 时出错: ", error);
   }
 
-  try {
-    dbQuery(
-      "INSERT INTO log (`key`, `type`, `code`, `message`, `ip`) VALUES (?,?,?,?,?)",
-      [
-        JSON.stringify(query),
-        path,
-        "",
-        JSON.stringify(message),
-        user?.userID || ip,
-      ]
-    );
-  } catch (error) {
-    console.error(error);
-  }
-
-  console.log(
+  // 异步写入日志到数据库（不等待完成）
+  dbQuery(
+    "INSERT INTO log (`key`, `type`, `code`, `message`, `ip`) VALUES (?,?,?,?,?)",
     [
-      chalk.dim(time),
-      user?.n ? chalk.bgMagenta(` ${user?.n} `) : null,
-      countPrinter(counter(ip)),
-      user ? userPrinter(user) : chalk.dim(ip),
-      typeLog + chalk.bgGrey(` ${path} `),
-      query,
-      chalk.dim(JSON.stringify(message)),
+      JSON.stringify(query),
+      path,
+      "",
+      JSON.stringify(message),
+      user?.userID || ip,
     ]
-      .filter((logBlock) => logBlock)
-      .join(" ")
-  );
+  ).catch(error => {
+    console.error("数据库写入失败: ", error);
+  });
+
+  // 打印日志到控制台
+  printConsoleLog({
+    time,
+    user,
+    ip,
+    typeLog,
+    path,
+    query,
+    message,
+    count: counter(ip)
+  });
 }
 
 const versionTool = new VersionTool();
 
+/**
+ * 根据请求方法生成带颜色的日志标记
+ * @param {string} method HTTP方法
+ * @returns {string} 带颜色的日志标记
+ */
+function getMethodLog(method) {
+  const typeLog = ` ${method} `;
+  switch (method) {
+    case "GET":
+      return chalk.bgGreen(typeLog);
+    case "POST":
+      return chalk.bgBlue(typeLog);
+    default:
+      return chalk.bgGray(typeLog);
+  }
+}
+
+/**
+ * 打印日志到控制台
+ * @param {Object} params 日志参数
+ * @param {string} params.time 时间
+ * @param {Object|null} params.user 用户信息
+ * @param {string} params.ip IP地址
+ * @param {string} params.typeLog 请求方法日志
+ * @param {string} params.path 请求路径
+ * @param {*} params.query 查询参数
+ * @param {*} params.message 消息
+ * @param {number} params.count 访问计数
+ */
+function printConsoleLog({
+  time,
+  user,
+  ip,
+  typeLog,
+  path,
+  query,
+  message,
+  count
+}) {
+  const logBlocks = [
+    chalk.dim(time),
+    user?.n ? chalk.bgMagenta(` ${user?.n} `) : null,
+    countPrinter(count),
+    user ? userPrinter(user) : chalk.dim(ip),
+    `${typeLog}${chalk.bgGrey(` ${path} `)}`,
+    query,
+    chalk.dim(JSON.stringify(message))
+  ].filter(Boolean);
+
+  console.log(logBlocks.join(" "));
+}
+
+/**
+ * 格式化用户信息输出
+ * @param {Object} user 用户信息对象
+ * @param {boolean} user.isPayed 是否付费用户
+ * @param {string} user.userID 用户ID
+ * @param {string} user.clientVersion 客户端版本
+ * @param {boolean} user.isIPA 是否IPA用户
+ * @returns {string} 格式化后的用户信息字符串
+ */
 function userPrinter(user) {
   let result = "";
   if (user?.isPayed) {
@@ -114,6 +170,11 @@ function userPrinter(user) {
   return result;
 }
 
+/**
+ * 格式化访问计数输出
+ * @param {number} count 访问次数
+ * @returns {string} 格式化后的计数字符串
+ */
 function countPrinter(count) {
   if (count < 50) {
     return chalk.bgGray(` ${count} `);
