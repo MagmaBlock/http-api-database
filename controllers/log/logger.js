@@ -39,7 +39,7 @@ export default async function logger(req, query, message) {
   const typeLog = getMethodLog(req.method);
 
   // 如果有用户名上报, 暂存至内存
-  if (query.toString().startsWith("u_") && req.method === "POST") {
+  if (query && query.toString().startsWith("u_") && req.method === "POST") {
     try {
       const userInfo = {
         isPayed: req.body?.value?.a,
