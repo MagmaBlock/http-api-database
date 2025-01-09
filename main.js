@@ -1,4 +1,5 @@
 import express from "express";
+import cron from "node-cron";
 
 import logger from "./controllers/log/logger.js";
 import { clearOldLogs } from "./controllers/log/logCleaner.js";
@@ -49,8 +50,17 @@ const server = app.listen(config.port, () => {
   console.log("[启动信息] 服务器已启动, 访问端口为: " + server.address().port);
 });
 
-setInterval(() => {
-  // 每一小时会触发一次的定时任务
+// 处理SIGTERM信号，优雅关闭服务器
+process.on('SIGTERM', () => {
+  console.log('[关闭信息] 收到SIGTERM信号，正在关闭服务器...');
+  server.close(() => {
+    console.log('[关闭信息] 服务器已关闭');
+    process.exit(0);
+  });
+});
+
+// 使用cron表达式设置每小时执行一次的定时任务
+cron.schedule('0 * * * *', () => {
   console.log("[定时任务] 正在执行定时任务...");
   clearOldLogs();
-}, 1000 * 60 * 60);
+});
