@@ -12,8 +12,6 @@ services:
       - "3307:3306"
     volumes:
       - db_data:/var/lib/mysql
-    networks:
-      - app-network
 
   app:
     build: .
@@ -25,8 +23,6 @@ services:
       TZ: Asia/Shanghai
     ports:
       - "7090:7090"
-    networks:
-      - app-network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:7090/v1/get/test_json"]
       interval: 60s
