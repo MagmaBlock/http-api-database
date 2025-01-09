@@ -9,7 +9,7 @@ const ipCount = new Keyv(new KeyvRedis(config.redisUrl), {
   namespace: "ip-count",
 });
 
-const ipUser = new KeyvRedis(config.redisUrl, {
+const ipUser = new KeyvRedis(config, {
   namespace: "ip-user",
 });
 
@@ -35,7 +35,7 @@ export default async function logger(req, query, message) {
   const ip = req.ip;
   const time = new Date().toLocaleTimeString();
   const path = decodeURIComponent(req.originalUrl.split("?")[0]);
-  let user = (await ipUser.get(ip)) ?? null;
+  let user = JSON.parse(await ipUser.get(ip)) ?? null;
   const typeLog = getMethodLog(req.method);
 
   // 如果有用户名上报, 暂存至内存
@@ -48,7 +48,7 @@ export default async function logger(req, query, message) {
         isIPA: req.body?.value?.ipa,
         n: req.body?.value?.n,
       };
-      await ipUser.set(ip, userInfo);
+      await ipUser.set(ip, JSON.stringify(userInfo));
       user = userInfo;
     } catch (error) {
       console.error("暂存 IP ID 时出错: ", error);
