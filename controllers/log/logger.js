@@ -50,7 +50,6 @@ export default async function logger(req, query, message) {
         isIPA: req.body?.value?.ipa,
         n: req.body?.value?.n,
       };
-      console.log(ip, userInfo);
       await ipUser.set(ip, userInfo);
 
       user = userInfo;
