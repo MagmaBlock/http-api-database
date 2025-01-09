@@ -3,12 +3,13 @@ import chalk from "chalk";
 import Keyv from "keyv";
 import dbQuery from "../tools/dbQuery.js";
 import { VersionTool } from "./appVersion/versionTool.js";
+import config from "../../common/config.js";
 
-const ipCount = new Keyv(new KeyvRedis("redis://localhost:6379"), {
+const ipCount = new Keyv(new KeyvRedis(config.redisUrl), {
   namespace: "ip-count",
 });
 
-const ipUser = new KeyvRedis("redis://localhost:6379", {
+const ipUser = new KeyvRedis(config.redisUrl, {
   namespace: "ip-user",
 });
 
