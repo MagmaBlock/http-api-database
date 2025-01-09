@@ -10,7 +10,7 @@ const ipCount = new Keyv(new KeyvRedis(config.redisUrl), {
 });
 
 const ipUser = new Keyv(
-  new KeyvRedis(config, {
+  new KeyvRedis(config.redisUrl, {
     namespace: "ip-user",
   })
 );
