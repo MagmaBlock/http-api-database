@@ -7,6 +7,7 @@ services:
       MYSQL_USER: httpdb
       MYSQL_PASSWORD: httpdb
       MYSQL_ROOT_PASSWORD: rootpassword
+      TZ: Asia/Shanghai
     ports:
       - "3307:3306"
     volumes:
@@ -18,8 +19,10 @@ services:
     build: .
     depends_on:
       - db
+    restart: always
     environment:
       DATABASE_URL: mysql://httpdb:httpdb@db:3306/httpdb
+      TZ: Asia/Shanghai
     ports:
       - "7090:7090"
     networks:
@@ -29,9 +32,7 @@ services:
       interval: 60s
       timeout: 10s
       retries: 3
+    tty: true
 
 volumes:
   db_data:
-
-networks:
-  app-network:
