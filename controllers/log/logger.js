@@ -1,29 +1,28 @@
-import dbQuery from "../tools/dbQuery.js";
+import KeyvRedis from "@keyv/redis";
 import chalk from "chalk";
+import Keyv from "keyv";
+import dbQuery from "../tools/dbQuery.js";
 import { VersionTool } from "./appVersion/versionTool.js";
 
-// 使用Map存储访问次数，提高性能
-const store = new Map();
+const ipCount = new Keyv(new KeyvRedis("redis://localhost:6379"), {
+  namespace: "ip-count",
+});
+
+const ipUser = new KeyvRedis("redis://localhost:6379", {
+  namespace: "ip-user",
+});
 
 /**
  * 计数器，统计指定key的访问次数
  * @param {string} cKey 计数key
- * @param {string} [cType="default"] 计数类型
- * @returns {number} 当前计数
  */
-function counter(cKey, cType = "default") {
-  if (!store.has(cType)) {
-    store.set(cType, new Map());
-  }
-  const typeStore = store.get(cType);
-  const count = (typeStore.get(cKey) || 0) + 1;
-  typeStore.set(cKey, count);
+async function counter(cKey) {
+  const currentCount = await ipCount.get(cKey);
+
+  const count = (currentCount ?? 0) + 1;
+  ipCount.set(cKey, count);
   return count;
 }
-
-// 使用Map存储IP对应的用户信息
-const ipStore = new Map();
-
 
 /**
  * Log 打印器, 会将 log 打印至控制台, 并保存至数据库
@@ -35,7 +34,7 @@ export default async function logger(req, query, message) {
   const ip = req.ip;
   const time = new Date().toLocaleTimeString();
   const path = decodeURIComponent(req.originalUrl.split("?")[0]);
-  let user = ipStore.get(ip) ?? null;
+  let user = (await ipUser.get(ip)) ?? null;
   const typeLog = getMethodLog(req.method);
 
   // 如果有用户名上报, 暂存至内存
@@ -48,7 +47,7 @@ export default async function logger(req, query, message) {
         isIPA: req.body?.value?.ipa,
         n: req.body?.value?.n,
       };
-      ipStore.set(ip, userInfo);
+      await ipUser.set(ip, userInfo);
       user = userInfo;
     } catch (error) {
       console.error("暂存 IP ID 时出错: ", error);
@@ -65,7 +64,7 @@ export default async function logger(req, query, message) {
       JSON.stringify(message),
       user?.userID || ip,
     ]
-  ).catch(error => {
+  ).catch((error) => {
     console.error("数据库写入失败: ", error);
   });
 
@@ -78,7 +77,7 @@ export default async function logger(req, query, message) {
     path,
     query,
     message,
-    count: counter(ip)
+    count: await counter(ip),
   });
 }
 
@@ -121,7 +120,7 @@ function printConsoleLog({
   path,
   query,
   message,
-  count
+  count,
 }) {
   const logBlocks = [
     chalk.dim(time),
@@ -130,7 +129,7 @@ function printConsoleLog({
     user ? userPrinter(user) : chalk.dim(ip),
     `${typeLog}${chalk.bgGrey(` ${path} `)}`,
     query,
-    chalk.dim(JSON.stringify(message))
+    chalk.dim(JSON.stringify(message)),
   ].filter(Boolean);
 
   console.log(logBlocks.join(" "));

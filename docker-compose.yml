@@ -13,10 +13,22 @@ services:
     volumes:
       - db_data:/var/lib/mysql
 
+  redis:
+    image: redis:7.4.2
+    restart: always
+    environment:
+      TZ: Asia/Shanghai
+    volumes:
+      - redis_data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - "6379:6379"
+
   app:
     build: .
     depends_on:
       - db
+      - redis
     restart: always
     environment:
       DATABASE_URL: mysql://httpdb:httpdb@db:3306/httpdb
@@ -32,3 +44,4 @@ services:
 
 volumes:
   db_data:
+  redis_data:
