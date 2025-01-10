@@ -22,10 +22,10 @@ const ipUser = prefixStorage(cacheKV, "ip-user");
  * @param {string} cKey 计数key
  */
 async function counter(cKey) {
-  const currentCount = await ipCount.getItem(cKey);
+  const currentCount = Number(await ipCount.getItem(cKey));
 
-  const count = (currentCount ?? 0) + 1;
-  ipCount.setItem(cKey, count);
+  const count = (isNaN(currentCount) ? 0 : currentCount) + 1;
+  await ipCount.setItem(cKey, count);
   return count;
 }
 
