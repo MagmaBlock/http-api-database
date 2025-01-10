@@ -9,11 +9,9 @@ const ipCount = new Keyv(new KeyvRedis(config.redisUrl), {
   namespace: "ip-count",
 });
 
-const ipUser = new Keyv(
-  new KeyvRedis(config.redisUrl, {
-    namespace: "ip-user",
-  })
-);
+const ipUser = new Keyv(new KeyvRedis(config.redisUrl), {
+  namespace: "ip-user",
+});
 
 /**
  * 计数器，统计指定key的访问次数
