@@ -32,6 +32,7 @@ services:
     restart: always
     environment:
       DATABASE_URL: mysql://httpdb:httpdb@db:3306/httpdb
+      REDIS_URL: redis://redis:6379
       TZ: Asia/Shanghai
     ports:
       - "7090:7090"
