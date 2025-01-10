@@ -6,7 +6,9 @@ import { VersionTool } from "./appVersion/versionTool.js";
 import config from "../../common/config.js";
 
 // 如果指定了 Redis 则使用 Redis 作为缓存，否则使用内存作为缓存
-const cacheKeyV = config.redisUrl ? new KeyvRedis(config.redisUrl) : new Keyv();
+const cacheKeyV = config.redisUrl
+  ? new KeyvRedis(config.redisUrl, { namespace: "http-api-database" })
+  : new Keyv();
 const ipCount = new Keyv({ store: cacheKeyV, namespace: "ip-count" });
 const ipUser = new Keyv({ store: cacheKeyV, namespace: "ip-user" });
 
