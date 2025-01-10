@@ -1,26 +1,31 @@
-import KeyvRedis from "@keyv/redis";
 import chalk from "chalk";
-import Keyv from "keyv";
+import { createStorage, prefixStorage } from "unstorage";
+import redisDriver from "unstorage/drivers/redis";
+import config from "../../common/config.js";
 import dbQuery from "../tools/dbQuery.js";
 import { VersionTool } from "./appVersion/versionTool.js";
-import config from "../../common/config.js";
 
 // 如果指定了 Redis 则使用 Redis 作为缓存，否则使用内存作为缓存
-const cacheKeyV = config.redisUrl
-  ? new KeyvRedis(config.redisUrl, { namespace: "http-api-database" })
-  : new Keyv();
-const ipCount = new Keyv({ store: cacheKeyV, namespace: "ip-count" });
-const ipUser = new Keyv({ store: cacheKeyV, namespace: "ip-user" });
+const cacheKV = config.redisUrl
+  ? createStorage({
+      driver: redisDriver({
+        url: config.redisUrl,
+        base: "http-api-database",
+      }),
+    })
+  : createStorage();
+const ipCount = prefixStorage(cacheKV, "ip-count");
+const ipUser = prefixStorage(cacheKV, "ip-user");
 
 /**
  * 计数器，统计指定key的访问次数
  * @param {string} cKey 计数key
  */
 async function counter(cKey) {
-  const currentCount = await ipCount.get(cKey);
+  const currentCount = await ipCount.getItem(cKey);
 
   const count = (currentCount ?? 0) + 1;
-  ipCount.set(cKey, count);
+  ipCount.setItem(cKey, count);
   return count;
 }
 
@@ -34,7 +39,7 @@ export default async function logger(req, query, message) {
   const ip = req.ip;
   const time = new Date().toLocaleTimeString();
   const path = decodeURIComponent(req.originalUrl.split("?")[0]);
-  let user = await ipUser.get(ip);
+  let user = await ipUser.getItem(ip);
   const typeLog = getMethodLog(req.method);
 
   // 如果有用户名上报, 暂存至内存
@@ -47,7 +52,7 @@ export default async function logger(req, query, message) {
         isIPA: req.body?.value?.ipa,
         n: req.body?.value?.n,
       };
-      await ipUser.set(ip, userInfo);
+      await ipUser.setItem(ip, userInfo);
 
       user = userInfo;
     } catch (error) {
