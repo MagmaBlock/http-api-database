@@ -5,8 +5,8 @@ import { getTotalColl } from "./topic.js";
 // POST
 // 此 API 修改用户对指定 Topic 的收藏状态, 请求主体中需要提供 userID topicID
 export async function collectAPI(req, res) {
-  let userID = req.body.userID;
-  let topicID = req.body.topicID;
+  let userID = String(req.body.userID);
+  let topicID = String(req.body.topicID);
   let collect = Boolean(req.body.collect);
   if (!userID || !topicID || typeof req.body.collect != "boolean")
     return res.send({ code: 400, message: "参数缺失或 collect 非 Boolean" });
