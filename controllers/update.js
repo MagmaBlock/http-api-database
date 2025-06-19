@@ -30,7 +30,7 @@ export default async function updateKeyAPI(req, res) {
   } catch (error) {
     let message = "服务器内部错误";
     res.send({ code: 500, message });
-    logger(req, key, message);
+    logger(req, req.body?.key, message);
   }
 }
 
