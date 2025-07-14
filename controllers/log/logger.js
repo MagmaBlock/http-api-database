@@ -131,9 +131,8 @@ function printConsoleLog({
   const logBlocks = [
     chalk.dim(time),
     user?.n ? chalk.bgMagenta(` ${user?.n} `) : null,
-    countPrinter(count),
     user ? userPrinter(user) : chalk.dim(ip),
-    `${typeLog}${chalk.bgGrey(` ${path} `)}`,
+    `${chalk.bgGrey(` ${path} `)}`,
     query,
     chalk.dim(JSON.stringify(message)),
   ].filter(Boolean);
