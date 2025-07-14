@@ -163,9 +163,9 @@ function userPrinter(user) {
   let distance = versionTool.getLatestDistance(user?.clientVersion);
 
   if (distance == 0) {
-    result += chalk.bgGreen(` √ `);
+    result += chalk.bgBlue(` √ `);
   } else if (distance != -1 && distance <= 5) {
-    result += chalk.bgBlue(` ${distance} `);
+    result += chalk.bgGreen(` ${distance} `);
   } else {
     result += chalk.bgGray(` ${distance == -1 ? "×" : distance} `);
   }
