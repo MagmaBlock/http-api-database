@@ -5,7 +5,7 @@ import {
 } from "../controllers/collect/collect.js";
 import { collectRankAPI } from "../controllers/collect/collectRank.js";
 import { isCollectedAPI } from "../controllers/collect/isCollected.js";
-import { requireAppUA } from "../src/utils/ua.js";
+import { requireAppUA } from "../middleware/ua.js";
 const router = Router();
 
 router.get("/user/is", isCollectedAPI);

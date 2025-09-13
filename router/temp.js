@@ -3,7 +3,7 @@ import {
   downloadFileAPI,
   uploadFileAPI,
 } from "../controllers/tempFile/main.js";
-import { requireAppUA } from "../src/utils/ua.js";
+import { requireAppUA } from "../middleware/ua.js";
 const router = Router();
 
 router.post("/upload", [requireAppUA, uploadFileAPI]);
