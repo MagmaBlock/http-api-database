@@ -4,6 +4,7 @@ import cron from "node-cron";
 import logger from "./controllers/log/logger.js";
 import { clearOldLogs } from "./controllers/log/logCleaner.js";
 import config from "./common/config.js";
+import { encryptResponseBody } from "./middleware/encrypt.js";
 
 const app = express(); // Express app
 app.use(
@@ -21,6 +22,8 @@ app.all("/*", async (req, res, next) => {
 
   next();
 });
+
+app.use(encryptResponseBody);
 
 import main from "./router/main.js"; // main router
 import online from "./router/online.js"; // 在线量
@@ -51,16 +54,16 @@ const server = app.listen(config.port, () => {
 });
 
 // 处理SIGTERM信号，优雅关闭服务器
-process.on('SIGTERM', () => {
-  console.log('[关闭信息] 收到SIGTERM信号，正在关闭服务器...');
+process.on("SIGTERM", () => {
+  console.log("[关闭信息] 收到SIGTERM信号，正在关闭服务器...");
   server.close(() => {
-    console.log('[关闭信息] 服务器已关闭');
+    console.log("[关闭信息] 服务器已关闭");
     process.exit(0);
   });
 });
 
 // 使用cron表达式设置每小时执行一次的定时任务
-cron.schedule('0 * * * *', () => {
+cron.schedule("0 * * * *", () => {
   console.log("[定时任务] 正在执行定时任务...");
   clearOldLogs();
 });
